@@ -6,7 +6,11 @@
         <item name="tabRippleColor">@android:color/transparent</item>
         <item name="tabBackground">@android:color/transparent</item>
         <item name="tabIndicatorFullWidth">true</item>
+    </style>
 
+    <style name="AppRoundedImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
     </style>
 
     <style name="AppTextTitle">

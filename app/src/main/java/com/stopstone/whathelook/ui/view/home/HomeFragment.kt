@@ -10,6 +10,9 @@ import com.stopstone.whathelook.R
 import com.stopstone.whathelook.databinding.FragmentHomeBinding
 import com.stopstone.whathelook.ui.view.home.answer.AnswerFragment
 import com.stopstone.whathelook.ui.view.home.question.QuestionFragment
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -34,6 +37,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        _binding = null
     }
 
     private fun setFragment(fragment: Fragment) {
