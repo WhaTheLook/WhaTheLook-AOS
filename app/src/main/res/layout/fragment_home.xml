@@ -96,9 +96,27 @@
         android:id="@+id/container_main"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tab_layout"
         app:layout_constraintVertical_bias="0.0"
         tools:layout_editor_absoluteX="0dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_add_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/black"
+        app:fabSize="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:maxImageSize="36dp"
+        app:pressedTranslationZ="12dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.FAB"
+        app:tint="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

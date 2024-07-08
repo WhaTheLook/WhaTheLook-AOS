@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayout
 import com.stopstone.whathelook.R
 import com.stopstone.whathelook.databinding.FragmentHomeBinding
@@ -33,6 +34,11 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setFragment(questionFragment) // 초기 화면 설정
         setTabLayout()
+
+        binding.btnAddPost.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeToPost()
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {
