@@ -45,6 +45,9 @@ android {
 }
 
 dependencies {
+    // 카카오 로그인 API 모듈
+    implementation(libs.v2.user)
+
     // Hilt
     implementation (libs.hilt.android)
     ksp (libs.hilt.compiler)

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WhaTheLook</string>
+    <string name="label_navigation_home">홈</string>
+    <string name="label_navigation_bookmark">북마크</string>
+    <string name="label_navigation_mypage">마이페이지</string>
+    <string name="description_app_logo">앱 로고</string>
 </resources>
