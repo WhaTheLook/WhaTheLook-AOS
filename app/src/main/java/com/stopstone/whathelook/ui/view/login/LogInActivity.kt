@@ -25,8 +25,11 @@ class LogInActivity : AppCompatActivity() {
 
         binding.btnSignInKakao.setOnClickListener {
 //            loginWithKakao()
-
-
+            startActivity(
+                Intent(this, MainActivity::class.java)
+            ).also {
+                finish()
+            }
         }
     }
 
