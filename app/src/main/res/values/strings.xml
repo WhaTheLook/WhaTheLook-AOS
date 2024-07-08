@@ -4,4 +4,8 @@
     <string name="label_navigation_bookmark">북마크</string>
     <string name="label_navigation_mypage">마이페이지</string>
     <string name="description_app_logo">앱 로고</string>
+    <string name="invalid_tab_position">Invalid Tab Position</string>
+    <string name="label_tab_answer">정보공유</string>
+    <string name="label_tab_question">질문하기</string>
+    <string name="description_search_image">검색</string>
 </resources>
