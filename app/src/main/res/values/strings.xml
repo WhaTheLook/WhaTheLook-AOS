@@ -8,4 +8,5 @@
     <string name="label_tab_answer">정보공유</string>
     <string name="label_tab_question">질문하기</string>
     <string name="description_search_image">검색</string>
+    <string name="description_btn_post_add">등록하기</string>
 </resources>

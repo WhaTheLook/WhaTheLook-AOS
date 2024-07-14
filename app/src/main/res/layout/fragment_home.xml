@@ -100,15 +100,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tab_layout"
-        app:layout_constraintVertical_bias="0.0"
         tools:layout_editor_absoluteX="0dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
+        android:contentDescription="@string/description_btn_post_add"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/black"
         app:fabSize="normal"
