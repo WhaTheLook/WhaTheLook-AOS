@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_home_to_post"
             app:destination="@id/navigation_post" />
+        <action
+            android:id="@+id/action_home_to_search"
+            app:destination="@id/navigation_search" />
     </fragment>
     <fragment
         android:id="@+id/navigation_bookmark"
@@ -30,4 +33,9 @@
         android:name="com.stopstone.whathelook.ui.view.post.PostActivity"
         android:label="PostActivity"
         tools:layout="@layout/activity_post" />
+    <activity
+        android:id="@+id/navigation_search"
+        android:name="com.stopstone.whathelook.ui.view.SearchActivity"
+        android:label="activity_search"
+        tools:layout="@layout/activity_search" />
 </navigation>

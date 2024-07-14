@@ -39,6 +39,11 @@ class HomeFragment : Fragment() {
             val action = HomeFragmentDirections.actionHomeToPost()
             findNavController().navigate(action)
         }
+
+        binding.btnSearch.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeToSearch()
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {

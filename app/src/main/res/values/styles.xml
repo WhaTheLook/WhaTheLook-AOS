@@ -18,6 +18,11 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="NoBoxTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+    </style>
+
     <style name="AppButtonPrimary" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:textAppearance">@style/AppTextOnPrimary.S16.Bold</item>
         <item name="android:background">@drawable/selector_background_button</item>
