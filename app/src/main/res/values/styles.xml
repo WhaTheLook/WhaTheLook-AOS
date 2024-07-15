@@ -23,6 +23,27 @@
         <item name="boxStrokeWidthFocused">0dp</item>
     </style>
 
+    <style name="AppEditText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:paddingStart">11dp</item>
+        <item name="android:paddingEnd">11dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/selector_input_text_background</item>
+        <item name="android:textColorHint">@color/gray_200</item>
+    </style>
+
+    <style name="CustomChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/color_background_chip</item>
+        <item name="android:textColor">@color/color_background_text</item>
+        <item name="android:textAppearance">@style/AppTextOnPrimary.S16.Bold</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipMinHeight">48dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="chipCornerRadius">8dp</item>
+    </style>
+
     <style name="AppButtonPrimary" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:textAppearance">@style/AppTextOnPrimary.S16.Bold</item>
         <item name="android:background">@drawable/selector_background_button</item>

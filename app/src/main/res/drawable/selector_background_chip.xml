@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/black" />
+            <corners android:radius="8dp" />  <!-- 이 값을 조절하여 round 정도를 변경할 수 있습니다 -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/darker_gray" />
+            <corners android:radius="8dp" />  <!-- 이 값을 조절하여 round 정도를 변경할 수 있습니다 -->
+        </shape>
+    </item>
+</selector>

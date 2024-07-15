@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="분실물 등록" />
+        app:title="게시글 작성" />
 
     <TextView
         android:id="@+id/tv_post_item_title"
@@ -29,11 +29,11 @@
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/et_post_item_title"
+        style="@style/AppEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/background_post"
         android:hint="게시글 제목을 입력해주세요."
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,7 +45,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/background_post"
+        android:background="@drawable/background_text_input_normal"
         android:padding="5dp"
         android:src="@drawable/ic_photo"
         app:layout_constraintStart_toStartOf="@id/et_post_item_title"
@@ -75,12 +75,12 @@
         app:layout_constraintTop_toBottomOf="@id/iv_post_item_add_image" />
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/et_post_item_description"
+        android:id="@+id/et_post_item_content"
+        style="@style/AppEditText"
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/background_post"
         android:gravity="top"
         android:hint="글 내용"
         android:padding="10dp"
@@ -92,11 +92,13 @@
         android:id="@+id/tv_post_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="카테고리 선택"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/et_post_item_description"
-        app:layout_constraintTop_toBottomOf="@id/et_post_item_description" />
+        app:layout_constraintStart_toStartOf="@id/et_post_item_content"
+        app:layout_constraintTop_toBottomOf="@id/et_post_item_content" />
+
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/categoryChipGroup"
@@ -107,21 +109,22 @@
         app:layout_constraintStart_toStartOf="@id/tv_post_category"
         app:layout_constraintTop_toBottomOf="@id/tv_post_category"
         app:selectionRequired="true"
+        app:singleLine="true"
         app:singleSelection="true">
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipCategory1"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:id="@+id/chip_question"
+            style="@style/CustomChipStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="질문하기" />
+            android:text="@string/label_tab_question" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipCategory2"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:id="@+id/chip_answer"
+            style="@style/CustomChipStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="정보공유" />
+            android:text="@string/label_tab_answer" />
 
     </com.google.android.material.chip.ChipGroup>
 
