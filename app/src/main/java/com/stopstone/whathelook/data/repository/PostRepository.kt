@@ -12,11 +12,11 @@ class PostRepository @Inject constructor() {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
         val users = listOf(
-            User(1, "김철수", "https://example.com/profile1.jpg", "2023-01-01"),
-            User(2, "이영희", "https://example.com/profile2.jpg", "2023-02-15"),
-            User(3, "박지훈", "https://example.com/profile3.jpg", "2023-03-20"),
-            User(4, "정수민", "https://example.com/profile4.jpg", "2023-04-10"),
-            User(5, "홍길동", "https://example.com/profile5.jpg", "2023-05-05")
+            User(2, "이영희", "https://thumbnail8.coupangcdn.com/thumbnails/remote/492x492ex/image/rs_quotation_api/sfljdb3g/a0514217b99140b69bde6cb66d2ee914.jpg", "2023-02-15"),
+            User(1, "김철수", "https://pbs.twimg.com/profile_images/1688763174714245120/htmgYD32_400x400.jpg", "2023-01-01"),
+            User(3, "박지훈", "https://pbs.twimg.com/profile_images/1688763174714245120/htmgYD32_400x400.jpg", "2023-03-20"),
+            User(4, "정수민", "https://thumbnail8.coupangcdn.com/thumbnails/remote/492x492ex/image/rs_quotation_api/sfljdb3g/a0514217b99140b69bde6cb66d2ee914.jpg", "2023-04-10"),
+            User(5, "홍길동", "https://pbs.twimg.com/profile_images/1688763174714245120/htmgYD32_400x400.jpg", "2023-05-05")
         )
 
         for (i in 1..20) {

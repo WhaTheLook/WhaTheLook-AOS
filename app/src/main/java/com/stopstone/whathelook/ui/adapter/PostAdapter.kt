@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.stopstone.whathelook.data.model.Post
 import com.stopstone.whathelook.databinding.ItemAnswerBinding
 import com.stopstone.whathelook.databinding.ItemQuestionBinding
@@ -51,6 +52,10 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
     ) : ViewHolder(binding.root) {
         fun bind(post: Post) {
             binding.tvUserName.text = post.writer.name
+            Glide.with(binding.root)
+                .load(post.writer.profileImageUrl)
+                .circleCrop()
+                .into(binding.ivUserProfile)
             binding.tvPostContent.text = post.content
             binding.tvPostTimestamp.text = getRelativeTimeSpan(post.createdAt)
         }
