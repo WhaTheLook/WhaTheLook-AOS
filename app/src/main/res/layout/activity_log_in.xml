@@ -8,14 +8,38 @@
     tools:context=".ui.view.splash.SplashActivity">
 
     <ImageView
-        android:layout_width="228dp"
-        android:layout_height="228dp"
+        android:id="@+id/iv_login_logo"
+        android:layout_width="209dp"
+        android:layout_height="87dp"
         android:contentDescription="@string/description_app_logo"
+        android:scaleType="fitXY"
         android:src="@drawable/ic_symbol"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_login_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/app_name"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/iv_login_logo"
+        app:layout_constraintStart_toStartOf="@id/iv_login_logo"
+        app:layout_constraintTop_toBottomOf="@id/iv_login_logo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        android:text="당신이 궁금했던 패션 정보의 모든 것"
+        app:layout_constraintEnd_toEndOf="@id/tv_login_title"
+        app:layout_constraintStart_toStartOf="@id/tv_login_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_login_title" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_sign_in_kakao"

@@ -8,9 +8,11 @@
     tools:context=".ui.view.splash.SplashActivity">
 
     <ImageView
-        android:layout_width="228dp"
-        android:layout_height="228dp"
+        android:id="@+id/iv_login_logo"
+        android:layout_width="209dp"
+        android:layout_height="87dp"
         android:contentDescription="@string/description_app_logo"
+        android:scaleType="fitXY"
         android:src="@drawable/ic_symbol"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
