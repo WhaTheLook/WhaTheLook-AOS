@@ -1,10 +1,9 @@
-package com.stopstone.whathelook.ui.view
+package com.stopstone.whathelook.ui.view.home.search
 
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService

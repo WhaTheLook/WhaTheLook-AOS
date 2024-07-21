@@ -8,14 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.stopstone.whathelook.databinding.FragmentBookmarkBinding
 import com.stopstone.whathelook.ui.adapter.PostAdapter
-import com.stopstone.whathelook.ui.viewmodel.PostViewModel
+import com.stopstone.whathelook.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BookmarkFragment : Fragment() {
     private var _binding: FragmentBookmarkBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: PostViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
     private val adapter = PostAdapter()
 
     override fun onCreateView(
