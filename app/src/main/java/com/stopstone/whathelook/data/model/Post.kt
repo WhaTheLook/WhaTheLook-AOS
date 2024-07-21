@@ -1,5 +1,9 @@
 package com.stopstone.whathelook.data.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Post(
     val id: Int,
     val title: String,
@@ -8,4 +12,4 @@ data class Post(
     val createdAt: String,
     val type: Boolean,
     val deleted: Boolean,
-)
+): Parcelable

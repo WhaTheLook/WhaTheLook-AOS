@@ -1,5 +1,6 @@
 package com.stopstone.whathelook.ui.view.home.question
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.stopstone.whathelook.databinding.FragmentQuestionBinding
 import com.stopstone.whathelook.ui.adapter.PostAdapter
+import com.stopstone.whathelook.ui.view.home.detail.PostDetailActivity
 import com.stopstone.whathelook.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +35,12 @@ class QuestionFragment : Fragment() {
         viewModel.posts.observe(viewLifecycleOwner) { posts ->
             val items = posts.filter { it.type }
             adapter.submitList(items)
+        }
+
+        adapter.onItemClick = { post ->
+            val intent = Intent(context, PostDetailActivity::class.java)
+            intent.putExtra("post", post)
+            startActivity(intent)
         }
     }
 

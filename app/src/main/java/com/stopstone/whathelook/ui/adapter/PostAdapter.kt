@@ -12,9 +12,14 @@ import com.stopstone.whathelook.databinding.ItemQuestionBinding
 
 class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
     private val items: MutableList<Post> = mutableListOf()
+    var onItemClick: ((Post) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
-            VIEW_TYPE_QUESTION -> QuestionViewHolder(parent)
+            VIEW_TYPE_QUESTION -> QuestionViewHolder(
+                parent,
+                { position -> onItemClick?.invoke(items[position]) })
+
             VIEW_TYPE_ANSWER -> AnswerViewHolder(parent)
             else -> throw IllegalArgumentException("Invalid view type")
         }
@@ -24,6 +29,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
         val item = items[position]
         when (holder) {
             is QuestionViewHolder -> holder.bind(item)
+            is AnswerViewHolder -> holder.bind(item)
         }
     }
 
@@ -44,12 +50,19 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     class QuestionViewHolder(
         parent: ViewGroup,
+        private val onItemClick: (Int) -> Unit,
         private val binding: ItemQuestionBinding = ItemQuestionBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         ),
     ) : ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                onItemClick(adapterPosition)
+            }
+        }
+
         fun bind(post: Post) {
             binding.tvUserName.text = post.writer.name
             Glide.with(binding.root)
