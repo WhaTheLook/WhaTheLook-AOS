@@ -26,7 +26,11 @@
         android:id="@+id/navigation_mypage"
         android:name="com.stopstone.whathelook.ui.view.mypage.MypageFragment"
         android:label="MypageFragment"
-        tools:layout="@layout/fragment_mypage" />
+        tools:layout="@layout/fragment_mypage" >
+        <action
+            android:id="@+id/action_mypage_to_edit_profile_activity"
+            app:destination="@id/navigation_edit_profile_activity" />
+    </fragment>
 
     <activity
         android:id="@+id/navigation_post"
@@ -38,4 +42,13 @@
         android:name="com.stopstone.whathelook.ui.view.SearchActivity"
         android:label="activity_search"
         tools:layout="@layout/activity_search" />
+    <activity
+        android:id="@+id/navigation_edit_profile_activity"
+        android:name="com.stopstone.whathelook.ui.view.mypage.EditProfileActivity"
+        android:label="activity_edit_profile"
+        tools:layout="@layout/activity_edit_profile" >
+        <argument
+            android:name="user"
+            app:argType="com.stopstone.whathelook.data.model.User" />
+    </activity>
 </navigation>

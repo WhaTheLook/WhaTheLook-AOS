@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.view.mypage.EditProfileActivity">
+
+    <Toolbar
+        android:id="@+id/toolbar_edit_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:navigationIcon="@drawable/ic_arrow_back"
+        android:title="프로필 수정"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_edit_profile_image"
+        android:layout_width="84dp"
+        android:layout_height="84dp"
+        android:layout_marginTop="36dp"
+        android:background="@color/gray_300"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_edit_profile"
+        app:shapeAppearanceOverlay="@style/AppRoundedImage.Circle" />
+
+
+    <ImageButton
+        android:id="@+id/btn_edit_profile_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_button_circle"
+        android:padding="3dp"
+        android:src="@drawable/ic_photo"
+        app:layout_constraintBottom_toBottomOf="@id/iv_edit_profile_image"
+        app:layout_constraintEnd_toEndOf="@id/iv_edit_profile_image" />
+
+    <EditText
+        android:id="@+id/et_edit_profile_nickname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:background="@drawable/selector_input_text_background"
+        android:hint="수정할 닉네임"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_edit_profile_image" />
+
+    <Button
+        android:id="@+id/btn_edit_profile_logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:text="로그아웃"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@id/btn_edit_profile_delete"
+        app:layout_constraintStart_toStartOf="@id/btn_edit_profile_button" />
+
+    <Button
+        android:id="@+id/btn_edit_profile_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:background="@android:color/transparent"
+        android:text="회원탈퇴"
+        android:textColor="@android:color/holo_red_dark"
+        app:layout_constraintBottom_toTopOf="@id/btn_edit_profile_button"
+        app:layout_constraintStart_toStartOf="@id/btn_edit_profile_button" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_edit_profile_button"
+        style="@style/AppButtonPrimary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        android:enabled="false"
+        android:text="수정"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

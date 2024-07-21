@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
+import com.stopstone.whathelook.data.model.User
 import com.stopstone.whathelook.databinding.FragmentMypageBinding
 import com.stopstone.whathelook.ui.view.mypage.mycomment.MyCommentFragment
 import com.stopstone.whathelook.ui.view.mypage.mypost.MyPostFragment
@@ -40,6 +42,19 @@ class MypageFragment : Fragment() {
                 else -> null
             }
         }.attach()
+
+        binding.btnMypageEditProfile.setOnClickListener {
+            // 프로필 수정 버튼 클릭 시 처리
+            val action = MypageFragmentDirections.actionMypageToEditProfileActivity(
+                User(
+                    2,
+                    "Annonymous",
+                    "https://thumbnail8.coupangcdn.com/thumbnails/remote/492x492ex/image/rs_quotation_api/sfljdb3g/a0514217b99140b69bde6cb66d2ee914.jpg",
+                    "2023-02-15"
+                ),
+            )
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {
