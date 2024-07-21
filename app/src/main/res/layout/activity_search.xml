@@ -11,7 +11,8 @@
         android:id="@+id/btn_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/description_btn_arrow_back"
         android:padding="6dp"
@@ -23,7 +24,7 @@
         android:id="@+id/view_search_area"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="7dp"
+        android:layout_marginHorizontal="3dp"
         android:background="@drawable/background_gray_400"
         app:layout_constraintBottom_toBottomOf="@id/btn_back"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
@@ -59,5 +60,77 @@
         app:layout_constraintBottom_toBottomOf="@id/view_search_area"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/view_search_area" />
+
+    <TextView
+        android:id="@+id/tv_search_history_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="최근 검색어"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_back" />
+
+    <TextView
+        android:id="@+id/tv_clear_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:padding="5dp"
+        android:text="전체삭제"
+        app:layout_constraintBottom_toBottomOf="@id/tv_search_history_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_search_history_label" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_history_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_search_history_label"
+        tools:itemCount="5"
+        tools:listitem="@layout/item_search_history_list" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_recent_searches"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="tv_search_history_label,tv_clear_all,rv_search_history_list" />
+
+
+    <TextView
+        android:id="@+id/tv_search_history_empty_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="최근 검색 내역이 없습니다."
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_search_area" />
+
+    <TextView
+        android:id="@+id/tv_search_history_empty_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="관심있는 태그를 검색해주세요."
+        android:textSize="12sp"
+        android:layout_marginTop="7dp"
+        app:layout_constraintEnd_toEndOf="@id/tv_search_history_empty_title"
+        app:layout_constraintStart_toStartOf="@id/tv_search_history_empty_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_search_history_empty_title" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_recent_searches_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="tv_search_history_empty_title,tv_search_history_empty_description," />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
