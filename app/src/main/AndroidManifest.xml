@@ -15,11 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WhaTheLook"
         tools:targetApi="31">
+
         <activity
             android:name=".ui.view.mypage.EditProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.view.SearchActivity"
+            android:name=".ui.view.home.search.SearchActivity"
             android:exported="false" />
         <activity
             android:name=".ui.view.post.PostActivity"
@@ -29,10 +30,10 @@
             android:exported="false" />
         <activity
             android:name=".ui.view.splash.SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
