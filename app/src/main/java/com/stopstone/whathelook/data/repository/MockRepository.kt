@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class PostRepository @Inject constructor() {
+class MockRepository @Inject constructor() {
     fun getDummyPosts(): List<Post> {
         val posts = mutableListOf<Post>()
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

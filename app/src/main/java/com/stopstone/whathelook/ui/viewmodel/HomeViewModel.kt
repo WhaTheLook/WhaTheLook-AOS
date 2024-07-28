@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.stopstone.whathelook.data.model.Post
-import com.stopstone.whathelook.data.repository.PostRepository
+import com.stopstone.whathelook.data.repository.MockRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: PostRepository
+    private val repository: MockRepository
 ) : ViewModel() {
     private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> = _posts

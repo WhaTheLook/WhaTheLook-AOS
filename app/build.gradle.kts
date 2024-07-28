@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -6,6 +9,11 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
 }
+
+
+val localPropertiesFile = rootProject.file("local.properties")
+val properties = Properties()
+properties.load(FileInputStream(localPropertiesFile))
 
 android {
     namespace = "com.stopstone.whathelook"
@@ -18,7 +26,13 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "API_KEY", "\"${properties["kakaoapi.key"]}\"")
+        buildConfigField("String", "API_URL", "\"${properties["server.url"]}\"")
+        val apiKey = properties["kakaoapi.key"] as String
+        manifestPlaceholders["KAKAO_API_KEY"] = apiKey
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -33,6 +47,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
