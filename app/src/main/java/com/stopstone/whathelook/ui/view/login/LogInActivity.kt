@@ -15,16 +15,6 @@ import com.stopstone.whathelook.ui.viewmodel.LoginState
 import com.stopstone.whathelook.ui.viewmodel.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
 
 @AndroidEntryPoint
 class LogInActivity : AppCompatActivity() {
@@ -34,6 +24,8 @@ class LogInActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        viewModel.validateToken()
 
         binding.btnSignInKakao.setOnClickListener {
             performKakaoLogin()
@@ -45,7 +37,7 @@ class LogInActivity : AppCompatActivity() {
     private fun performKakaoLogin() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
-                // Handle error
+                Log.e("KakaoLogin", "카카오 로그인 실패", error)
             } else if (token != null) {
                 viewModel.login(token.accessToken)
             }
@@ -66,9 +58,7 @@ class LogInActivity : AppCompatActivity() {
                         // Show loading indicator
                     }
                     is LoginState.Success -> {
-                        val intent = Intent(this@LogInActivity, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        navigateToMainActivity()
                     }
                     is LoginState.Error -> {
                         Toast.makeText(this@LogInActivity, state.message, Toast.LENGTH_SHORT).show()
@@ -77,5 +67,11 @@ class LogInActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this@LogInActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
