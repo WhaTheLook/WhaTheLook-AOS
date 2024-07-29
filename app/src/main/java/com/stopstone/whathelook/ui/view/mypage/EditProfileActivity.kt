@@ -19,7 +19,7 @@ class EditProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         Glide.with(this)
-            .load(args.user.profileImageUrl)
+            .load(args.user.imageUrl)
             .into(binding.ivEditProfileImage)
         binding.etEditProfileNickname.hint = args.user.name
 

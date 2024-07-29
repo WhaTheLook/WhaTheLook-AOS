@@ -34,7 +34,7 @@ class PostDetailActivity : AppCompatActivity() {
     private fun setupUI(post: Post) {
         val user = post.writer
         Glide.with(this)
-            .load(user.profileImageUrl)
+            .load(user.profileImage)
             .into(binding.ivUserProfile)
 
         binding.tvUserName.text = user.name

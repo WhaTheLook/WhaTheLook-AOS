@@ -1,10 +1,12 @@
 package com.stopstone.whathelook.di
 
 import com.stopstone.whathelook.domain.repository.RecentSearchRepository
+import com.stopstone.whathelook.domain.repository.UserRepository
 import com.stopstone.whathelook.domain.usecase.AddSearchUseCase
 import com.stopstone.whathelook.domain.usecase.ClearRecentSearchesUseCase
 import com.stopstone.whathelook.domain.usecase.DeleteSearchUseCase
 import com.stopstone.whathelook.domain.usecase.GetRecentSearchesUseCase
+import com.stopstone.whathelook.domain.usecase.GetUserInfoUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,5 +33,10 @@ object UseCaseModule {
     @Provides
     fun provideClearRecentSearchesUseCase(repository: RecentSearchRepository): ClearRecentSearchesUseCase {
         return ClearRecentSearchesUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetUserInfoUseCase(repository: UserRepository): GetUserInfoUseCase {
+        return GetUserInfoUseCase(repository)
     }
 }

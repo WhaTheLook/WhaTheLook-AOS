@@ -66,7 +66,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
         fun bind(post: Post) {
             binding.tvUserName.text = post.writer.name
             Glide.with(binding.root)
-                .load(post.writer.profileImageUrl)
+                .load(post.writer.profileImage)
                 .circleCrop()
                 .into(binding.ivUserProfile)
             binding.tvPostContent.text = post.content

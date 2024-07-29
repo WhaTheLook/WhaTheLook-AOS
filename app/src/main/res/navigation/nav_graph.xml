@@ -47,8 +47,9 @@
         android:name="com.stopstone.whathelook.ui.view.mypage.EditProfileActivity"
         android:label="activity_edit_profile"
         tools:layout="@layout/activity_edit_profile" >
+
         <argument
             android:name="user"
-            app:argType="com.stopstone.whathelook.data.model.User" />
+            app:argType="com.stopstone.whathelook.domain.model.User" />
     </activity>
 </navigation>
