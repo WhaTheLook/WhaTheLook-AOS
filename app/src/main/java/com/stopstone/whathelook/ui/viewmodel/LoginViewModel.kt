@@ -1,6 +1,5 @@
 package com.stopstone.whathelook.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stopstone.whathelook.data.local.TokenManager

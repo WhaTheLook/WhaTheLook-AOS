@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
-import com.stopstone.whathelook.data.model.UserInfo
 import com.stopstone.whathelook.databinding.FragmentMypageBinding
 import com.stopstone.whathelook.domain.model.User
 import com.stopstone.whathelook.ui.view.mypage.mycomment.MyCommentFragment

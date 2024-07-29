@@ -1,7 +1,6 @@
 package com.stopstone.whathelook.data.model
 
 import android.os.Parcelable
-import com.stopstone.whathelook.domain.model.User
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

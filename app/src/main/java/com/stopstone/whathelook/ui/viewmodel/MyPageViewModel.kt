@@ -31,7 +31,7 @@ class MyPageViewModel @Inject constructor(
 
                 if (result.isSuccess) {
                     result.getOrNull()?.let { userInfo ->
-                        val user = userInfo.toUser(userInfo)
+                        val user = toUser(userInfo)
                         _uiState.value = user
                     }
                 }
@@ -41,7 +41,7 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    fun UserInfo.toUser(userInfo: UserInfo): User {
+    private fun toUser(userInfo: UserInfo): User {
         return User(
             name = userInfo.name,
             imageUrl = userInfo.profileImage
