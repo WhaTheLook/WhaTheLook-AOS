@@ -1,9 +1,13 @@
 package com.stopstone.whathelook.di
 
+import android.content.ContentResolver
+import com.stopstone.whathelook.data.api.ApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
 import com.stopstone.whathelook.data.db.RecentSearchDao
 import com.stopstone.whathelook.data.repository.LoginRepositoryImpl
+import com.stopstone.whathelook.domain.repository.PostRepository
+import com.stopstone.whathelook.data.repository.PostRepositoryImpl
 import com.stopstone.whathelook.data.repository.RecentSearchRepositoryImpl
 import com.stopstone.whathelook.data.repository.UserRepositoryImpl
 import com.stopstone.whathelook.domain.repository.LoginRepository
@@ -34,4 +38,10 @@ object RepositoryModule {
     @Singleton
     fun provideLoginRepository(loginService: LoginService): LoginRepository =
         LoginRepositoryImpl(loginService)
+
+    @Provides
+    @Singleton
+    fun providePostRepository(apiService: ApiService, contentResolver: ContentResolver): PostRepository =
+        PostRepositoryImpl(apiService, contentResolver)
+
 }

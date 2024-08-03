@@ -40,6 +40,17 @@ class LogInActivity : AppCompatActivity() {
                 Log.e("KakaoLogin", "카카오 로그인 실패", error)
             } else if (token != null) {
                 viewModel.login(token.accessToken)
+                UserApiClient.instance.me { user, error ->
+                    Log.d(
+                        "KakaoLogin", "카카오 로그인 성공 "
+                                + "사용자 정보: ${user?.kakaoAccount?.email}"
+                                + "사용자 정보: ${user?.id}"
+
+                    )
+                }
+                Log.i("KakaoLogin", "카카오 로그인 성공 ${token.accessToken}")
+                Log.i("KakaoLogin", "카카오 로그인 성공 " +
+                        "")
             }
         }
 

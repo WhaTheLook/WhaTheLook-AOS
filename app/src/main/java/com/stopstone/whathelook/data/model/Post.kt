@@ -1,15 +1,16 @@
 package com.stopstone.whathelook.data.model
 
+import android.net.Uri
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Post(
-    val id: Int,
+    val id: String = "",
+    val kakaoId: String,
     val title: String,
-    val writer: UserInfo,
     val content: String,
-    val createdAt: String,
-    val type: Boolean,
-    val deleted: Boolean,
+    val category: String,
+    val hashtags: List<String>,
+    val imageUris: List<Uri>
 ): Parcelable

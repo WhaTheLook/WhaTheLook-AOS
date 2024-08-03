@@ -34,7 +34,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (items[position].type) VIEW_TYPE_QUESTION else VIEW_TYPE_ANSWER
+        return if (items[position].category == "질문하기") VIEW_TYPE_QUESTION else VIEW_TYPE_ANSWER
     }
 
     override fun getItemCount(): Int = items.size
@@ -64,13 +64,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
         }
 
         fun bind(post: Post) {
-            binding.tvUserName.text = post.writer.name
-            Glide.with(binding.root)
-                .load(post.writer.profileImage)
-                .circleCrop()
-                .into(binding.ivUserProfile)
             binding.tvPostContent.text = post.content
-            binding.tvPostTimestamp.text = getRelativeTimeSpan(post.createdAt)
         }
 
         private fun getRelativeTimeSpan(createdAt: String): String {

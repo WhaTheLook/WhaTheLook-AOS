@@ -33,7 +33,7 @@ class QuestionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.rvQuestionList.adapter = adapter
         viewModel.posts.observe(viewLifecycleOwner) { posts ->
-            val items = posts.filter { it.type }
+            val items = posts.filter { it.category == "질문하기" }
             adapter.submitList(items)
         }
 

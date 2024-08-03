@@ -1,12 +1,14 @@
 package com.stopstone.whathelook.ui.view.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayout
+import com.kakao.sdk.user.UserApiClient
 import com.stopstone.whathelook.R
 import com.stopstone.whathelook.databinding.FragmentHomeBinding
 import com.stopstone.whathelook.ui.view.home.answer.AnswerFragment
@@ -34,6 +36,20 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setFragment(questionFragment) // 초기 화면 설정
         setTabLayout()
+
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                // 사용자 정보 요청 실패
+                return@me
+            } else {
+                // 사용자 정보 요청 성공
+                Log.d("HomeFragment", "사용자 정보 요청 성공")
+                Log.d("HomeFragment", "사용자 정보: $user")
+                Log.d("HomeFragment", "사용자 ID: ${user?.id}")
+                Log.d("HomeFragment", "사용자 이메일: ${user?.kakaoAccount?.email}")
+                Log.d("HomeFragment", "사용자 프로필 사진 URL: ${user?.kakaoAccount?.profile?.thumbnailImageUrl}")
+            }
+        }
 
         binding.btnAddPost.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeToPost()

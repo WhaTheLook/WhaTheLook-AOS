@@ -9,14 +9,15 @@ import javax.inject.Inject
 class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        val accessToken = "Bearer ${tokenManager.getAccessToken()}"
+        val accessToken = tokenManager.getAccessToken()
 
-        val newRequest = if (tokenManager.getAccessToken() != null) {
-            Log.d("AuthInterceptor", "Adding Authorization Header")
+        val newRequest = if (!accessToken.isNullOrEmpty()) {
+            Log.d("AuthInterceptor", "Adding Authorization Header: Bearer ${accessToken.take(10)}...")
             originalRequest.newBuilder()
-                .header("Authorization", accessToken)
+                .header("Authorization", "Bearer $accessToken")
                 .build()
         } else {
+            Log.w("AuthInterceptor", "No access token available")
             originalRequest
         }
 

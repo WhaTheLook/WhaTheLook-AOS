@@ -15,12 +15,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.kakao.sdk.user.UserApiClient
+import com.stopstone.whathelook.R
 import com.stopstone.whathelook.databinding.ActivityPostBinding
 import com.stopstone.whathelook.ui.adapter.PostImageAdapter
 import com.stopstone.whathelook.ui.viewmodel.PostViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
 @AndroidEntryPoint
 class PostActivity : AppCompatActivity() {
@@ -80,6 +83,15 @@ class PostActivity : AppCompatActivity() {
         binding.toolbarPost.setNavigationOnClickListener {
             finish()
         }
+
+        // kakaoId 설정 (예: 로그인 시 저장된 ID)
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e("PostActivity", "사용자 정보 요청 실패", error)
+            } else if (user != null) {
+                viewModel.setKakaoId(user.id.toString())
+            }
+        }
     }
 
     private fun setupTextInputs() {
@@ -95,6 +107,13 @@ class PostActivity : AppCompatActivity() {
 
     private fun setupChipGroup() {
         binding.categoryChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            val selectedChipId = checkedIds.firstOrNull()
+            val category = when (selectedChipId) {
+                R.id.chip_answer -> "정보공유"
+                R.id.chip_question -> "질문하기"
+                else -> ""
+            }
+            viewModel.setCategory(category)
             viewModel.setChipSelected(checkedIds.isNotEmpty())
         }
     }
@@ -102,7 +121,7 @@ class PostActivity : AppCompatActivity() {
     private fun setupSubmitButton() {
         binding.btnRegisterCompleteButton.setOnClickListener {
             viewModel.extractHashtags()
-            finish()
+            viewModel.createPost()
         }
     }
 
@@ -136,6 +155,22 @@ class PostActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.hashtagList.collect { hashtags ->
                 Log.d("PostActivity", "해시태그: $hashtags")
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.postCreationResult.collect { result ->
+                result.onSuccess { message ->
+                    Toast.makeText(this@PostActivity, "게시물이 성공적으로 생성되었습니다: $message", Toast.LENGTH_SHORT).show()
+                    finish()
+                }.onFailure { error ->
+                    val errorMessage = when (error) {
+                        is HttpException -> "HTTP 오류: ${error.code()}"
+                        is IOException -> "네트워크 오류: ${error.message}"
+                        else -> "오류: ${error.message}"
+                    }
+                    Toast.makeText(this@PostActivity, "게시물 생성에 실패했습니다: $errorMessage", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

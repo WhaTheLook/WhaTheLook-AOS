@@ -23,4 +23,8 @@ class TokenManager @Inject constructor(context: Context) {
     fun getRefreshToken(): String? {
         return sharedPreferences.getString("refresh_token", null)
     }
+
+    fun clearToken() {
+        sharedPreferences.edit().clear().apply()
+    }
 }

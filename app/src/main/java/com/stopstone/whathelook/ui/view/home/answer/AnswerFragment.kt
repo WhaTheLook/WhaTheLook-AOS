@@ -31,7 +31,7 @@ class AnswerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.rvQuestionList.adapter = adapter
         viewModel.posts.observe(viewLifecycleOwner) { posts ->
-            val items = posts.filter { !it.type }
+            val items = posts.filter { it.category == "정보공유" }
             adapter.submitList(items)
         }
     }
