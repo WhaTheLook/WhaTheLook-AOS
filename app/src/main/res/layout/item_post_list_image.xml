@@ -5,10 +5,13 @@
     android:layout_height="wrap_content"
     android:padding="4dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_post_image"
         android:layout_width="100dp"
         android:layout_height="130dp"
+        android:background="@color/gray_200"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/AppRoundedImage" />
 </androidx.constraintlayout.widget.ConstraintLayout>
