@@ -5,14 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.bumptech.glide.Glide
-import com.stopstone.whathelook.data.model.Post
+import com.stopstone.whathelook.data.model.CreatePostModel
 import com.stopstone.whathelook.databinding.ItemAnswerBinding
 import com.stopstone.whathelook.databinding.ItemQuestionBinding
 
 class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
-    private val items: MutableList<Post> = mutableListOf()
-    var onItemClick: ((Post) -> Unit)? = null
+    private val items: MutableList<CreatePostModel> = mutableListOf()
+    var onItemClick: ((CreatePostModel) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
@@ -39,7 +38,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     override fun getItemCount(): Int = items.size
 
-    fun submitList(newItems: List<Post>) {
+    fun submitList(newItems: List<CreatePostModel>) {
         val diffCallback = PostDiffCallback(items, newItems)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
@@ -63,8 +62,8 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
             }
         }
 
-        fun bind(post: Post) {
-            binding.tvPostContent.text = post.content
+        fun bind(createPostModel: CreatePostModel) {
+            binding.tvPostContent.text = createPostModel.content
         }
 
         private fun getRelativeTimeSpan(createdAt: String): String {
@@ -82,7 +81,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
             false
         ),
     ) : ViewHolder(binding.root) {
-        fun bind(post: Post) {
+        fun bind(createPostModel: CreatePostModel) {
         }
     }
 
@@ -93,8 +92,8 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
 }
 
 class PostDiffCallback(
-    private val oldList: List<Post>,
-    private val newList: List<Post>,
+    private val oldList: List<CreatePostModel>,
+    private val newList: List<CreatePostModel>,
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = oldList.size

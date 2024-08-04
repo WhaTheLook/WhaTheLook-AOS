@@ -1,14 +1,14 @@
 package com.stopstone.whathelook.data.repository
 
-import com.stopstone.whathelook.data.model.Post
+import com.stopstone.whathelook.data.model.CreatePostModel
 import com.stopstone.whathelook.data.model.UserInfo
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
 class MockRepository @Inject constructor() {
-    fun getDummyPosts(): List<Post> {
-        val posts = mutableListOf<Post>()
+    fun getDummyPosts(): List<CreatePostModel> {
+        val createPostModels = mutableListOf<CreatePostModel>()
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
         val users = listOf(
@@ -50,8 +50,8 @@ class MockRepository @Inject constructor() {
         )
 
         for (i in 1..20) {
-            posts.add(
-                Post(
+            createPostModels.add(
+                CreatePostModel(
                     id = "$i",
                     kakaoId = "1234",
                     title = "게시글 제목 $i",
@@ -62,6 +62,6 @@ class MockRepository @Inject constructor() {
                 )
             )
         }
-        return posts
+        return createPostModels
     }
 }

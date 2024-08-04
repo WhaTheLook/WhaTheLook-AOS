@@ -1,36 +1,19 @@
 package com.stopstone.whathelook.ui.viewmodel
 
-import android.content.ContentResolver
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.stopstone.whathelook.data.api.ApiService
-import com.stopstone.whathelook.data.model.Post
-import com.stopstone.whathelook.data.model.PostRequest
+import com.stopstone.whathelook.data.model.CreatePostModel
 import com.stopstone.whathelook.domain.usecase.CreatePostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,10 +22,10 @@ class PostViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    private val _postState = MutableStateFlow(Post("", "", "", "", "", emptyList(), emptyList()))
-    val postState: StateFlow<Post> = _postState.asStateFlow()
+    private val _Create_postModelState = MutableStateFlow(CreatePostModel("", "", "", "", "", emptyList(), emptyList()))
+    val createPostModelState: StateFlow<CreatePostModel> = _Create_postModelState.asStateFlow()
 
-    val isSubmitEnabled = postState.map { post ->
+    val isSubmitEnabled = createPostModelState.map { post ->
         post.title.isNotBlank() && post.content.isNotBlank() &&
                 post.category.isNotBlank() && post.imageUris.isNotEmpty()
     }
@@ -100,7 +83,7 @@ class PostViewModel @Inject constructor(
     }
 
     private fun updatePostState() {
-        _postState.value = Post(
+        _Create_postModelState.value = CreatePostModel(
             title = _postTitle.value,
             content = _postContent.value,
             category = _category.value,
@@ -126,7 +109,7 @@ class PostViewModel @Inject constructor(
 
     fun createPost() {
         viewModelScope.launch {
-            val result = createPostUseCase(_postState.value)
+            val result = createPostUseCase(_Create_postModelState.value)
             _postCreationResult.emit(result)
         }
     }

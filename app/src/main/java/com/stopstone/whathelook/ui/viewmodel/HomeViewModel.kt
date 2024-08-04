@@ -3,7 +3,7 @@ package com.stopstone.whathelook.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.stopstone.whathelook.data.model.Post
+import com.stopstone.whathelook.data.model.CreatePostModel
 import com.stopstone.whathelook.data.repository.MockRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -12,8 +12,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: MockRepository
 ) : ViewModel() {
-    private val _posts = MutableLiveData<List<Post>>()
-    val posts: LiveData<List<Post>> = _posts
+    private val _posts = MutableLiveData<List<CreatePostModel>>()
+    val posts: LiveData<List<CreatePostModel>> = _posts
 
     init {
         loadPosts()

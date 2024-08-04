@@ -4,8 +4,8 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.google.gson.Gson
 import com.stopstone.whathelook.data.api.ApiService
-import com.stopstone.whathelook.data.model.Post
-import com.stopstone.whathelook.data.model.PostRequest
+import com.stopstone.whathelook.data.model.CreatePostModel
+import com.stopstone.whathelook.data.model.CreatePostRequestModel
 import com.stopstone.whathelook.domain.repository.PostRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,11 +20,11 @@ class PostRepositoryImpl @Inject constructor(
     private val contentResolver: ContentResolver
 ) : PostRepository {
 
-    override suspend fun createPost(post: Post): Result<String> = withContext(Dispatchers.IO) {
+    override suspend fun createPost(createPostModel: CreatePostModel): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val postRequest = createPostRequest(post)
+            val postRequest = createPostRequest(createPostModel)
             val postRequestBody = createPostRequestBody(postRequest)
-            val photoParts = createPhotoParts(post.imageUris)
+            val photoParts = createPhotoParts(createPostModel.imageUris)
 
             val response = apiService.createPost(postRequestBody, photoParts)
             Result.success(response)
@@ -37,16 +37,16 @@ class PostRepositoryImpl @Inject constructor(
         return emptyList()
     }
 
-    private fun createPostRequest(post: Post) = PostRequest(
-        kakaoId = post.kakaoId,
-        title = post.title,
-        content = post.content,
-        category = post.category,
-        hashtags = post.hashtags
+    private fun createPostRequest(createPostModel: CreatePostModel) = CreatePostRequestModel(
+        kakaoId = createPostModel.kakaoId,
+        title = createPostModel.title,
+        content = createPostModel.content,
+        category = createPostModel.category,
+        hashtags = createPostModel.hashtags
     )
 
-    private fun createPostRequestBody(postRequest: PostRequest): RequestBody {
-        val postRequestJson = Gson().toJson(postRequest)
+    private fun createPostRequestBody(createPostRequestModel: CreatePostRequestModel): RequestBody {
+        val postRequestJson = Gson().toJson(createPostRequestModel)
         return postRequestJson.toRequestBody("application/json".toMediaTypeOrNull())
     }
 

@@ -1,6 +1,6 @@
 package com.stopstone.whathelook.data.model
 
-data class PostRequest(
+data class CreatePostRequestModel(
     val kakaoId: String,
     val title: String,
     val content: String,
