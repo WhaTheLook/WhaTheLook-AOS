@@ -8,13 +8,16 @@
         android:id="@+id/navigation_home"
         android:name="com.stopstone.whathelook.ui.view.home.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_to_post"
             app:destination="@id/navigation_post" />
         <action
             android:id="@+id/action_home_to_search"
             app:destination="@id/navigation_search" />
+        <action
+            android:id="@+id/action_home_to_detail_activity"
+            app:destination="@id/navigation_detail_activity" />
     </fragment>
     <fragment
         android:id="@+id/navigation_bookmark"
@@ -26,7 +29,7 @@
         android:id="@+id/navigation_mypage"
         android:name="com.stopstone.whathelook.ui.view.mypage.MypageFragment"
         android:label="MypageFragment"
-        tools:layout="@layout/fragment_mypage" >
+        tools:layout="@layout/fragment_mypage">
         <action
             android:id="@+id/action_mypage_to_edit_profile_activity"
             app:destination="@id/navigation_edit_profile_activity" />
@@ -46,10 +49,19 @@
         android:id="@+id/navigation_edit_profile_activity"
         android:name="com.stopstone.whathelook.ui.view.mypage.EditProfileActivity"
         android:label="activity_edit_profile"
-        tools:layout="@layout/activity_edit_profile" >
+        tools:layout="@layout/activity_edit_profile">
 
         <argument
             android:name="user"
             app:argType="com.stopstone.whathelook.domain.model.User" />
+    </activity>
+    <activity
+        android:id="@+id/navigation_detail_activity"
+        android:name="com.stopstone.whathelook.ui.view.home.detail.PostDetailActivity"
+        android:label="PostDetailActivity"
+        tools:layout="@layout/activity_post_detail" >
+        <argument
+            android:name="postListItem"
+            app:argType="com.stopstone.whathelook.data.model.PostListItem" />
     </activity>
 </navigation>

@@ -16,7 +16,6 @@ class BookmarkFragment : Fragment() {
     private var _binding: FragmentBookmarkBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
-    private val adapter = PostAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,7 +28,6 @@ class BookmarkFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvQuestionList.adapter = adapter
 
     }
 

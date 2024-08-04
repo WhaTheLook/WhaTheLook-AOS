@@ -21,7 +21,7 @@ interface PostApiService {
     suspend fun getPostList(
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 10,
-        @Query("category") category: String = "질문하기",
+        @Query("category") category: String,
     ): PostListResponse
 
 }

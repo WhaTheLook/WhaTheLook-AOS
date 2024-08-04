@@ -19,7 +19,8 @@
         android:id="@+id/iv_user_profile"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="24dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_post_detail"
         tools:src="@tools:sample/avatars" />
@@ -35,34 +36,84 @@
         app:layout_constraintTop_toTopOf="@id/iv_user_profile"
         tools:text="Username" />
 
-    <TextView
-        android:id="@+id/tv_post_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="24dp"
-        android:textColor="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/tv_user_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_user_name"
-        tools:text="This is the content of the post. It can be multiple lines long and will wrap accordingly." />
-
-
-    <ImageView
-        android:id="@+id/iv_post_comment"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        app:layout_constraintStart_toStartOf="@id/tv_post_content"
-        app:layout_constraintTop_toBottomOf="@id/tv_post_content" />
 
     <TextView
         android:id="@+id/tv_post_timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="3dp"
         android:textColor="@android:color/darker_gray"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@id/iv_post_comment"
-        app:layout_constraintTop_toBottomOf="@id/iv_post_comment"
+        app:layout_constraintStart_toStartOf="@id/tv_user_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_user_name"
         tools:text="2h" />
+
+
+    <TextView
+        android:id="@+id/tv_post_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+        app:layout_constraintTop_toBottomOf="@id/iv_user_profile"
+        tools:text="This is the content of the post. It can be multiple lines long and will wrap accordingly." />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_post_image_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="24dp"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_content"
+        tools:listitem="@layout/item_post_list_image" />
+
+    <ImageButton
+        android:id="@+id/btn_post_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/selector_icon_favorite"
+        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+        app:layout_constraintTop_toBottomOf="@id/rv_post_image_list" />
+
+    <TextView
+        android:id="@+id/tv_post_like_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:text="0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
+        app:layout_constraintStart_toEndOf="@id/btn_post_like"
+        app:layout_constraintTop_toTopOf="@id/btn_post_like" />
+
+    <ImageButton
+        android:id="@+id/btn_post_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_comment"
+        app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
+        app:layout_constraintStart_toEndOf="@id/tv_post_like_count"
+        app:layout_constraintTop_toTopOf="@id/btn_post_like" />
+
+    <TextView
+        android:id="@+id/tv_post_comment_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:text="0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_post_comment"
+        app:layout_constraintStart_toEndOf="@id/btn_post_comment"
+        app:layout_constraintTop_toTopOf="@id/btn_post_comment" />
 </androidx.constraintlayout.widget.ConstraintLayout>

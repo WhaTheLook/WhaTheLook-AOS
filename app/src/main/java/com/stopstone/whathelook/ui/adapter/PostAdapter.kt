@@ -11,7 +11,7 @@ import com.stopstone.whathelook.data.model.PostListItem
 import com.stopstone.whathelook.databinding.ItemAnswerBinding
 import com.stopstone.whathelook.databinding.ItemQuestionBinding
 
-class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
+class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adapter<ViewHolder>() {
     private val items: MutableList<PostListItem> = mutableListOf()
     var onItemClick: ((PostListItem) -> Unit)? = null
 
@@ -19,9 +19,11 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
         return when (viewType) {
             VIEW_TYPE_QUESTION -> QuestionViewHolder(
                 parent,
-                { position -> onItemClick?.invoke(items[position]) })
+                onClickListener = { position -> listener.onItemClick(items[position]) })
 
-            VIEW_TYPE_ANSWER -> AnswerViewHolder(parent)
+            VIEW_TYPE_ANSWER -> AnswerViewHolder(parent,
+                onClickListener = { position -> listener.onItemClick(items[position]) })
+
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -51,7 +53,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     class QuestionViewHolder(
         parent: ViewGroup,
-        private val onItemClick: (Int) -> Unit,
+        private val onClickListener: (position: Int) -> Unit,
         private val binding: ItemQuestionBinding = ItemQuestionBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -62,7 +64,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
 
         init {
             binding.root.setOnClickListener {
-                onItemClick(adapterPosition)
+                onClickListener(adapterPosition)
             }
 
             binding.rvPostImageList.apply {
@@ -91,8 +93,19 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
             parent,
             false
         ),
+        private val onClickListener: (position: Int) -> Unit,
     ) : ViewHolder(binding.root) {
-        fun bind(createPostModel: PostListItem) {
+        init {
+            binding.root.setOnClickListener {
+                onClickListener(adapterPosition)
+            }
+        }
+
+        fun bind(postListItem: PostListItem) {
+            Glide.with(binding.root)
+                .load(postListItem.photoUrls.first())
+                .centerCrop()
+                .into(binding.ivPostImage)
         }
     }
 
@@ -117,4 +130,8 @@ class PostDiffCallback(
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
         oldList[oldItemPosition] == newList[newItemPosition]
+}
+
+interface OnItemClickListener {
+    fun onItemClick(postListItem: PostListItem)
 }

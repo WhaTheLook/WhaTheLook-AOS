@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.stopstone.whathelook.data.model.PostListItem
 import com.stopstone.whathelook.databinding.FragmentQuestionBinding
+import com.stopstone.whathelook.ui.adapter.OnItemClickListener
 import com.stopstone.whathelook.ui.adapter.PostAdapter
 import com.stopstone.whathelook.ui.view.home.detail.PostDetailActivity
 import com.stopstone.whathelook.ui.viewmodel.HomeViewModel
@@ -18,10 +20,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class QuestionFragment : Fragment() {
+class QuestionFragment : Fragment(), OnItemClickListener {
     private var _binding: FragmentQuestionBinding? = null
     private val binding get() = _binding!!
-    private val adapter: PostAdapter by lazy { PostAdapter() }
+    private val adapter: PostAdapter by lazy { PostAdapter(this) }
     private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
@@ -35,21 +37,13 @@ class QuestionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadPosts()
-
+        viewModel.loadPostList("질문하기")
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { collectPostList() }
             }
         }
         binding.rvQuestionList.adapter = adapter
-
-
-        adapter.onItemClick = { post ->
-            val intent = Intent(context, PostDetailActivity::class.java)
-            intent.putExtra("post", post)
-            startActivity(intent)
-        }
     }
 
     private suspend fun collectPostList() {
@@ -61,5 +55,11 @@ class QuestionFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onItemClick(postListItem: PostListItem) {
+        val intent = Intent(context, PostDetailActivity::class.java)
+        intent.putExtra("post", postListItem)
+        startActivity(intent)
     }
 }

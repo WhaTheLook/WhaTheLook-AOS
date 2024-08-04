@@ -8,8 +8,8 @@ import com.stopstone.whathelook.domain.repository.PostListRepository
 class PostListRepositoryImpl(
     private val postApiService: PostApiService
 ): PostListRepository {
-    override suspend fun getPostList(): PostListResponse {
-        val postList = postApiService.getPostList()
+    override suspend fun getPostList(category: String): PostListResponse {
+        val postList = postApiService.getPostList(category =  category)
         Log.d("PostListRepositoryImpl", "getPostList: $postList")
         return postList
     }
