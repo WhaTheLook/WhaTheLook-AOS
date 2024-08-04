@@ -11,16 +11,19 @@ import com.stopstone.whathelook.data.model.PostListResponse
 import com.stopstone.whathelook.data.repository.MockRepository
 import com.stopstone.whathelook.domain.repository.PostListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.lang.Thread.State
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getPostListRepository: PostListRepository,
 ) : ViewModel() {
-    private val _posts = MutableLiveData<List<PostListItem>>()
-    val posts: LiveData<List<PostListItem>> = _posts
-
+    private val _posts = MutableStateFlow<List<PostListItem>>(emptyList())
+    val posts: StateFlow<List<PostListItem>> = _posts.asStateFlow()
 
 
     fun loadPosts() {

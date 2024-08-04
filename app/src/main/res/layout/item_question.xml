@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusable="true"
-    android:clickable="true"
     android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
     android:paddingHorizontal="16dp"
     android:paddingVertical="12dp">
 
@@ -29,24 +29,6 @@
         app:layout_constraintTop_toTopOf="@id/iv_user_profile"
         tools:text="Username" />
 
-    <TextView
-        android:id="@+id/tv_post_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textColor="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/tv_user_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_user_name"
-        tools:text="This is the content of the post. It can be multiple lines long and will wrap accordingly." />
-
-
-    <ImageView
-        android:id="@+id/iv_post_comment"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        app:layout_constraintStart_toStartOf="@id/tv_post_content"
-        app:layout_constraintTop_toBottomOf="@id/tv_post_content" />
 
     <TextView
         android:id="@+id/tv_post_timestamp"
@@ -55,7 +37,30 @@
         android:layout_marginTop="8dp"
         android:textColor="@android:color/darker_gray"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@id/iv_post_comment"
-        app:layout_constraintTop_toBottomOf="@id/iv_post_comment"
+        app:layout_constraintStart_toStartOf="@id/tv_user_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_user_name"
         tools:text="2h" />
+
+
+    <TextView
+        android:id="@+id/tv_post_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_timestamp"
+        tools:text="This is the content of the post. It can be multiple lines long and will wrap accordingly." />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_post_image_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_content"
+        tools:listitem="@layout/item_post_list_image" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,13 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.stopstone.whathelook.data.model.CreatePostModel
+import com.stopstone.whathelook.data.model.PostListItem
 import com.stopstone.whathelook.databinding.ItemAnswerBinding
 import com.stopstone.whathelook.databinding.ItemQuestionBinding
 
 class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
-    private val items: MutableList<CreatePostModel> = mutableListOf()
-    var onItemClick: ((CreatePostModel) -> Unit)? = null
+    private val items: MutableList<PostListItem> = mutableListOf()
+    var onItemClick: ((PostListItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
@@ -38,7 +40,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     override fun getItemCount(): Int = items.size
 
-    fun submitList(newItems: List<CreatePostModel>) {
+    fun submitList(newItems: List<PostListItem>) {
         val diffCallback = PostDiffCallback(items, newItems)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
@@ -56,20 +58,26 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
             false
         ),
     ) : ViewHolder(binding.root) {
+        private val postListItemImageAdapter = PostListItemImageAdapter()
         init {
             binding.root.setOnClickListener {
                 onItemClick(adapterPosition)
             }
+
+            binding.rvPostImageList.apply {
+                adapter = postListItemImageAdapter
+            }
         }
 
-        fun bind(createPostModel: CreatePostModel) {
-            binding.tvPostContent.text = createPostModel.content
-        }
-
-        private fun getRelativeTimeSpan(createdAt: String): String {
-            // 여기에 createdAt 문자열을 상대적 시간으로 변환하는 로직을 구현합니다.
-            // 예: "2h", "3d" 등
-            return "2h" // 임시 반환값
+        fun bind(postListItem: PostListItem) {
+            Glide.with(binding.root)
+                .load(postListItem.author.profileImage)
+                .circleCrop()
+                .into(binding.ivUserProfile)
+            binding.tvUserName.text = postListItem.author.name
+            binding.tvPostTimestamp.text = postListItem.date
+            binding.tvPostContent.text = postListItem.content
+            postListItemImageAdapter.submitList(postListItem.photoUrls)
         }
     }
 
@@ -81,7 +89,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
             false
         ),
     ) : ViewHolder(binding.root) {
-        fun bind(createPostModel: CreatePostModel) {
+        fun bind(createPostModel: PostListItem) {
         }
     }
 
@@ -92,8 +100,8 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
 }
 
 class PostDiffCallback(
-    private val oldList: List<CreatePostModel>,
-    private val newList: List<CreatePostModel>,
+    private val oldList: List<PostListItem>,
+    private val newList: List<PostListItem>,
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int = oldList.size

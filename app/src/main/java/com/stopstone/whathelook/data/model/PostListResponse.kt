@@ -1,5 +1,8 @@
 package com.stopstone.whathelook.data.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 data class PostListResponse(
     val totalPages: Int,
     val totalElements: Long,
@@ -14,6 +17,7 @@ data class PostListResponse(
     val empty: Boolean
 )
 
+@Parcelize
 data class PostListItem(
     val id: Long,
     val author: Author,
@@ -25,13 +29,14 @@ data class PostListItem(
     val commentCount: Int,
     val hashtags: List<String>,
     val photoUrls: List<String>
-)
+) : Parcelable
 
+@Parcelize
 data class Author(
     val kakaoId: String,
     val name: String,
     val profileImage: String
-)
+) : Parcelable
 
 data class Sort(
     val empty: Boolean,
