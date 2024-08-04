@@ -5,7 +5,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.stopstone.whathelook.BuildConfig
-import com.stopstone.whathelook.data.api.ApiService
+import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
 import com.stopstone.whathelook.data.local.TokenManager
@@ -71,8 +71,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): ApiService {
-        return retrofit.create(ApiService::class.java)
+    fun provideApiService(retrofit: Retrofit): PostApiService {
+        return retrofit.create(PostApiService::class.java)
     }
 
     @Provides

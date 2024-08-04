@@ -31,11 +31,8 @@ class QuestionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loadPosts()
         binding.rvQuestionList.adapter = adapter
-        viewModel.posts.observe(viewLifecycleOwner) { posts ->
-            val items = posts.filter { it.category == "질문하기" }
-            adapter.submitList(items)
-        }
 
         adapter.onItemClick = { post ->
             val intent = Intent(context, PostDetailActivity::class.java)

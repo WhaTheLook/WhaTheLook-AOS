@@ -30,10 +30,7 @@ class AnswerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvQuestionList.adapter = adapter
-        viewModel.posts.observe(viewLifecycleOwner) { posts ->
-            val items = posts.filter { it.category == "정보공유" }
-            adapter.submitList(items)
-        }
+
     }
 
     override fun onDestroyView() {

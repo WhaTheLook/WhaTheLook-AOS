@@ -3,7 +3,7 @@ package com.stopstone.whathelook.data.repository
 import android.content.ContentResolver
 import android.net.Uri
 import com.google.gson.Gson
-import com.stopstone.whathelook.data.api.ApiService
+import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.model.CreatePostModel
 import com.stopstone.whathelook.data.model.CreatePostRequestModel
 import com.stopstone.whathelook.domain.repository.PostRepository
@@ -16,7 +16,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
-    private val apiService: ApiService,
+    private val postApiService: PostApiService,
     private val contentResolver: ContentResolver
 ) : PostRepository {
 
@@ -26,7 +26,7 @@ class PostRepositoryImpl @Inject constructor(
             val postRequestBody = createPostRequestBody(postRequest)
             val photoParts = createPhotoParts(createPostModel.imageUris)
 
-            val response = apiService.createPost(postRequestBody, photoParts)
+            val response = postApiService.createPost(postRequestBody, photoParts)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)

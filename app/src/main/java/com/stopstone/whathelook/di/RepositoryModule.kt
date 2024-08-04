@@ -1,16 +1,18 @@
 package com.stopstone.whathelook.di
 
 import android.content.ContentResolver
-import com.stopstone.whathelook.data.api.ApiService
+import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
 import com.stopstone.whathelook.data.db.RecentSearchDao
 import com.stopstone.whathelook.data.repository.LoginRepositoryImpl
+import com.stopstone.whathelook.data.repository.PostListRepositoryImpl
 import com.stopstone.whathelook.domain.repository.PostRepository
 import com.stopstone.whathelook.data.repository.PostRepositoryImpl
 import com.stopstone.whathelook.data.repository.RecentSearchRepositoryImpl
 import com.stopstone.whathelook.data.repository.UserRepositoryImpl
 import com.stopstone.whathelook.domain.repository.LoginRepository
+import com.stopstone.whathelook.domain.repository.PostListRepository
 import com.stopstone.whathelook.domain.repository.RecentSearchRepository
 import com.stopstone.whathelook.domain.repository.UserRepository
 import dagger.Module
@@ -41,7 +43,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun providePostRepository(apiService: ApiService, contentResolver: ContentResolver): PostRepository =
-        PostRepositoryImpl(apiService, contentResolver)
+    fun providePostRepository(postApiService: PostApiService, contentResolver: ContentResolver): PostRepository =
+        PostRepositoryImpl(postApiService, contentResolver)
 
+    @Provides
+    @Singleton
+    fun providePostListRepository(postApiService: PostApiService): PostListRepository =
+        PostListRepositoryImpl(postApiService)
 }
