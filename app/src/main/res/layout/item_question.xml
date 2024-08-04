@@ -58,10 +58,54 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/btn_post_like"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_post_content"
         tools:listitem="@layout/item_post_list_image" />
+
+    <ImageButton
+        android:id="@+id/btn_post_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/selector_icon_favorite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_post_like_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:text="0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
+        app:layout_constraintStart_toEndOf="@id/btn_post_like"
+        app:layout_constraintTop_toTopOf="@id/btn_post_like" />
+
+    <ImageButton
+        android:id="@+id/btn_post_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_comment"
+        app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
+        app:layout_constraintStart_toEndOf="@id/tv_post_like_count"
+        app:layout_constraintTop_toTopOf="@id/btn_post_like" />
+
+    <TextView
+        android:id="@+id/tv_post_comment_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:text="0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@id/btn_post_comment"
+        app:layout_constraintStart_toEndOf="@id/btn_post_comment"
+        app:layout_constraintTop_toTopOf="@id/btn_post_comment" />
 </androidx.constraintlayout.widget.ConstraintLayout>

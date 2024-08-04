@@ -59,6 +59,7 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
         ),
     ) : ViewHolder(binding.root) {
         private val postListItemImageAdapter = PostListItemImageAdapter()
+
         init {
             binding.root.setOnClickListener {
                 onItemClick(adapterPosition)
@@ -78,6 +79,8 @@ class PostAdapter : RecyclerView.Adapter<ViewHolder>() {
             binding.tvPostTimestamp.text = postListItem.date
             binding.tvPostContent.text = postListItem.content
             postListItemImageAdapter.submitList(postListItem.photoUrls)
+            binding.tvPostLikeCount.text = postListItem.likeCount.toString()
+            binding.tvPostCommentCount.text = postListItem.commentCount.toString()
         }
     }
 
