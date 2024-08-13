@@ -2,6 +2,7 @@ package com.stopstone.whathelook.ui.view.home.question
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,5 +62,12 @@ class QuestionFragment : Fragment(), OnItemClickListener {
         val intent = Intent(context, PostDetailActivity::class.java)
         intent.putExtra("post", postListItem)
         startActivity(intent)
+    }
+
+    override fun onLikeClick(postListItem: PostListItem) {
+        Log.d("QuestionFragment", "onLikeClick: $postListItem")
+        Log.d("QuestionFragment", "좋아요 눌림")
+
+        viewModel.updateLikeState(postListItem)
     }
 }

@@ -19,7 +19,9 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
         return when (viewType) {
             VIEW_TYPE_QUESTION -> QuestionViewHolder(
                 parent,
-                onClickListener = { position -> listener.onItemClick(items[position]) })
+                onClickListener = { position -> listener.onItemClick(items[position]) },
+                onLikeClickListener = { position -> listener.onLikeClick(items[position]) }
+            )
 
             VIEW_TYPE_ANSWER -> AnswerViewHolder(parent,
                 onClickListener = { position -> listener.onItemClick(items[position]) })
@@ -54,6 +56,7 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
     class QuestionViewHolder(
         parent: ViewGroup,
         private val onClickListener: (position: Int) -> Unit,
+        private val onLikeClickListener: (position: Int) -> Unit,
         private val binding: ItemQuestionBinding = ItemQuestionBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -65,6 +68,11 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
         init {
             binding.root.setOnClickListener {
                 onClickListener(adapterPosition)
+            }
+
+
+            binding.btnPostLike.setOnClickListener {
+                onLikeClickListener(adapterPosition)
             }
 
             binding.rvPostImageList.apply {
@@ -81,6 +89,7 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
             binding.tvPostTimestamp.text = postListItem.date
             binding.tvPostContent.text = postListItem.content
             postListItemImageAdapter.submitList(postListItem.photoUrls)
+            binding.btnPostLike.isSelected = postListItem.likeYN
             binding.tvPostLikeCount.text = postListItem.likeCount.toString()
             binding.tvPostCommentCount.text = postListItem.commentCount.toString()
         }
@@ -134,4 +143,5 @@ class PostDiffCallback(
 
 interface OnItemClickListener {
     fun onItemClick(postListItem: PostListItem)
+    fun onLikeClick(postListItem: PostListItem)
 }

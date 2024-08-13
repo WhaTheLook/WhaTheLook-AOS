@@ -26,6 +26,7 @@ data class PostListItem(
     val category: String,
     val date: String,
     val likeCount: Int,
+    val likeYN: Boolean,
     val commentCount: Int,
     val hashtags: List<String>,
     val photoUrls: List<String>
