@@ -64,4 +64,7 @@ class AnswerFragment : Fragment(), OnItemClickListener {
         intent.putExtra("post", postListItem)
         startActivity(intent)
     }
+
+    override fun onLikeClick(postListItem: PostListItem) {
+    }
 }
