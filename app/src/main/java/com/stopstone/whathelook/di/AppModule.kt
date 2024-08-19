@@ -5,6 +5,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.stopstone.whathelook.BuildConfig
+import com.stopstone.whathelook.data.api.BookmarkService
 import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
@@ -72,6 +73,12 @@ object AppModule {
     @Singleton
     fun provideApiService(retrofit: Retrofit): PostApiService {
         return retrofit.create(PostApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkService(retrofit: Retrofit): BookmarkService {
+        return retrofit.create(BookmarkService::class.java)
     }
 
     @Provides

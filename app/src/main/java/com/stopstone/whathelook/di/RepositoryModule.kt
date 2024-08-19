@@ -1,6 +1,7 @@
 package com.stopstone.whathelook.di
 
 import android.content.ContentResolver
+import com.stopstone.whathelook.data.api.BookmarkService
 import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
@@ -11,6 +12,8 @@ import com.stopstone.whathelook.domain.repository.post.PostRepository
 import com.stopstone.whathelook.data.repository.post.PostRepositoryImpl
 import com.stopstone.whathelook.data.repository.search.RecentSearchRepositoryImpl
 import com.stopstone.whathelook.data.repository.UserRepositoryImpl
+import com.stopstone.whathelook.data.repository.bookmark.BookmarkRepositoryImpl
+import com.stopstone.whathelook.domain.repository.bookmark.BookmarkRepository
 import com.stopstone.whathelook.domain.repository.login.LoginRepository
 import com.stopstone.whathelook.domain.repository.post.PostListRepository
 import com.stopstone.whathelook.domain.repository.search.RecentSearchRepository
@@ -50,4 +53,10 @@ object RepositoryModule {
     @Singleton
     fun providePostListRepository(postApiService: PostApiService): PostListRepository =
         PostListRepositoryImpl(postApiService)
+
+    @Provides
+    @Singleton
+    fun provideBookmarkRepository(bookmarkService: BookmarkService): BookmarkRepository =
+        BookmarkRepositoryImpl(bookmarkService)
+
 }
