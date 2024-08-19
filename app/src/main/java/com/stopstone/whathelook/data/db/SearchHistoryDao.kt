@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.stopstone.whathelook.data.model.RecentSearch
+import com.stopstone.whathelook.data.model.entity.RecentSearch
 import kotlinx.coroutines.flow.Flow
 
 @Dao

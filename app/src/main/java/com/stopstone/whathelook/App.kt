@@ -12,6 +12,5 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, BuildConfig.API_KEY)
-        tokenManager.clearToken()
     }
 }

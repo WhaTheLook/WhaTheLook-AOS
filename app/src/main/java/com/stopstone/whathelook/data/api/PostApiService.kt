@@ -1,8 +1,8 @@
 package com.stopstone.whathelook.data.api
 
-import com.stopstone.whathelook.data.model.PostListResponse
-import com.stopstone.whathelook.data.model.UpdateLikeRequest
-import com.stopstone.whathelook.data.model.UpdateLikeResponse
+import com.stopstone.whathelook.data.model.response.PostListResponse
+import com.stopstone.whathelook.data.model.request.UpdateLikeRequest
+import com.stopstone.whathelook.data.model.response.UpdateLikeResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body

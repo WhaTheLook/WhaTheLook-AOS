@@ -1,7 +1,7 @@
 package com.stopstone.whathelook.di
 
-import com.stopstone.whathelook.domain.repository.PostListRepository
-import com.stopstone.whathelook.domain.usecase.GetPostListUseCase
+import com.stopstone.whathelook.domain.repository.post.PostListRepository
+import com.stopstone.whathelook.domain.usecase.post.GetPostListUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

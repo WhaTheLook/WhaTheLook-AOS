@@ -1,25 +1,28 @@
 package com.stopstone.whathelook.data.repository
 
+import android.util.Log
 import com.stopstone.whathelook.data.api.UserService
-import com.stopstone.whathelook.data.model.UserInfo
+import com.stopstone.whathelook.data.local.UserManager
+import com.stopstone.whathelook.data.model.response.UserInfo
 import com.stopstone.whathelook.domain.repository.UserRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val userApi: UserService
+    private val userApi: UserService,
+    private val userManager: UserManager,
 ) : UserRepository {
-    override suspend fun getUserInfo(): Result<UserInfo> {
-        return try {
-            val response = userApi.getUserInfo()
-            if (response.isSuccessful) {
-                response.body()?.let { userInfo ->
-                    Result.success(userInfo)
-                } ?: Result.failure(Exception("Response body is null"))
-            } else {
-                Result.failure(Exception("Failed to fetch user info: ${response.code()}"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    override suspend fun getUserInfo(): UserInfo {
+        userManager.clearUserInfo()
+        val userInfo = userManager.getUserInfo()
+        Log.d("UserRepositoryImpl", "getUserInfo: $userInfo")
+
+        return userInfo!!
+    }
+
+    override fun getUserInfoFlow(): Flow<UserInfo?> = userManager.userInfoFlow
+
+    override suspend fun clearUserInfo() {
+        userManager.clearUserInfo()
     }
 }

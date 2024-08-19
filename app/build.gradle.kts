@@ -60,6 +60,8 @@ android {
 }
 
 dependencies {
+    implementation (libs.androidx.datastore.preferences)
+
     // 카카오 로그인 API 모듈
     implementation(libs.v2.user)
 

@@ -9,8 +9,7 @@ import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
 import com.stopstone.whathelook.data.local.TokenManager
-import com.stopstone.whathelook.data.repository.MockRepository
-import com.stopstone.whathelook.util.AuthInterceptor
+import com.stopstone.whathelook.data.auth.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,10 +73,6 @@ object AppModule {
     fun provideApiService(retrofit: Retrofit): PostApiService {
         return retrofit.create(PostApiService::class.java)
     }
-
-    @Provides
-    @Singleton
-    fun provideMockRepository(): MockRepository = MockRepository()
 
     @Provides
     @Singleton

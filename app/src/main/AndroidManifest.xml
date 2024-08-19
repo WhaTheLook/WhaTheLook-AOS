@@ -17,22 +17,22 @@
         android:theme="@style/Theme.WhaTheLook"
         tools:targetApi="31">
         <activity
-            android:name=".ui.view.home.detail.PostDetailActivity"
+            android:name=".view.detail.PostDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.view.mypage.EditProfileActivity"
+            android:name=".view.mypage.EditProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.view.home.search.SearchActivity"
+            android:name=".view.search.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.view.post.PostActivity"
+            android:name=".view.post.PostActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.view.login.LogInActivity"
+            android:name=".view.login.LogInActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.view.splash.SplashActivity"
+            android:name=".view.splash.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.view.MainActivity"
+            android:name=".view.MainActivity"
             android:exported="false" />
 
         <activity

@@ -6,7 +6,7 @@
     app:startDestination="@id/navigation_home">
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.stopstone.whathelook.ui.view.home.HomeFragment"
+        android:name="com.stopstone.whathelook.view.home.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <action
@@ -21,13 +21,13 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_bookmark"
-        android:name="com.stopstone.whathelook.ui.view.bookmark.BookmarkFragment"
+        android:name="com.stopstone.whathelook.view.bookmark.BookmarkFragment"
         android:label="BookmarkFragment"
         tools:layout="@layout/fragment_bookmark" />
 
     <fragment
         android:id="@+id/navigation_mypage"
-        android:name="com.stopstone.whathelook.ui.view.mypage.MypageFragment"
+        android:name="com.stopstone.whathelook.view.mypage.MypageFragment"
         android:label="MypageFragment"
         tools:layout="@layout/fragment_mypage">
         <action
@@ -37,31 +37,32 @@
 
     <activity
         android:id="@+id/navigation_post"
-        android:name="com.stopstone.whathelook.ui.view.post.PostActivity"
+        android:name="com.stopstone.whathelook.view.post.PostActivity"
         android:label="PostActivity"
         tools:layout="@layout/activity_post" />
     <activity
         android:id="@+id/navigation_search"
-        android:name="com.stopstone.whathelook.ui.view.home.search.SearchActivity"
+        android:name="com.stopstone.whathelook.view.splash.SplashActivity"
         android:label="activity_search"
         tools:layout="@layout/activity_search" />
     <activity
         android:id="@+id/navigation_edit_profile_activity"
-        android:name="com.stopstone.whathelook.ui.view.mypage.EditProfileActivity"
+        android:name="com.stopstone.whathelook.view.mypage.EditProfileActivity"
         android:label="activity_edit_profile"
         tools:layout="@layout/activity_edit_profile">
 
+
         <argument
             android:name="user"
-            app:argType="com.stopstone.whathelook.domain.model.User" />
+            app:argType="com.stopstone.whathelook.data.model.response.UserInfo" />
     </activity>
     <activity
         android:id="@+id/navigation_detail_activity"
-        android:name="com.stopstone.whathelook.ui.view.home.detail.PostDetailActivity"
+        android:name="com.stopstone.whathelook.view.post.PostActivity"
         android:label="PostDetailActivity"
         tools:layout="@layout/activity_post_detail" >
         <argument
             android:name="postListItem"
-            app:argType="com.stopstone.whathelook.data.model.PostListItem" />
+            app:argType="com.stopstone.whathelook.data.model.response.PostListItem" />
     </activity>
 </navigation>
