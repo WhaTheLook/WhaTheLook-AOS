@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
 import com.stopstone.whathelook.data.model.response.UserInfo
 import com.stopstone.whathelook.databinding.FragmentMypageBinding
+import com.stopstone.whathelook.view.mypage.ViewPagerAdapter.Companion.IMAGE_SIZE
 import com.stopstone.whathelook.view.mypage.viewmodel.MyPageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -71,11 +72,8 @@ class MypageFragment : Fragment() {
 
     private suspend fun collectUserInfo() {
         viewModel.uiState.collect { userInfo ->
-            userInfo.also {
-                // UI 업데이트 로직
-                withContext(Dispatchers.Main) {
-                    updateUI(userInfo)
-                }
+            withContext(Dispatchers.Main) {
+                updateUI(userInfo)
             }
         }
     }
@@ -90,8 +88,10 @@ class MypageFragment : Fragment() {
         Glide.with(this)
             .load(userInfo.profileImage)
             .circleCrop()
-            .override(64, 64)
+            .override(IMAGE_SIZE, IMAGE_SIZE)
             .into(binding.ivMypageProfileImage)
+        binding.tvMypageUserPost.text = userInfo.postCount.toString()
+        binding.tvMypageUserComment.text = userInfo.commentCount.toString()
     }
 }
 
@@ -104,5 +104,9 @@ class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
             1 -> MyCommentFragment()
             else -> throw IllegalArgumentException("Invalid position $position")
         }
+    }
+
+    companion object {
+        const val IMAGE_SIZE = 64
     }
 }

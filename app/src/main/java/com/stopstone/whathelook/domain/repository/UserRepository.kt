@@ -5,6 +5,4 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     suspend fun getUserInfo(): UserInfo
-    fun getUserInfoFlow(): Flow<UserInfo?>
-    suspend fun clearUserInfo()
 }

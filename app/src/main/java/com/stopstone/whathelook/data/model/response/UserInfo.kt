@@ -9,5 +9,7 @@ data class UserInfo(
     val email: String,
     val name: String,
     val profileImage: String,
-    val date: String
+    val date: String,
+    val postCount: Int,
+    val commentCount: Int,
 ): Parcelable

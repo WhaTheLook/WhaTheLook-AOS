@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stopstone.whathelook.data.local.TokenManager
-import com.stopstone.whathelook.data.local.UserManager
 import com.stopstone.whathelook.domain.model.Tokens
 import com.stopstone.whathelook.domain.usecase.login.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

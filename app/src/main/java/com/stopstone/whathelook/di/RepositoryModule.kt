@@ -5,7 +5,6 @@ import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
 import com.stopstone.whathelook.data.db.RecentSearchDao
-import com.stopstone.whathelook.data.local.UserManager
 import com.stopstone.whathelook.data.repository.login.LoginRepositoryImpl
 import com.stopstone.whathelook.data.repository.post.PostListRepositoryImpl
 import com.stopstone.whathelook.domain.repository.post.PostRepository
@@ -33,8 +32,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideUserInfoRepository(api: UserService, userManager: UserManager): UserRepository {
-        return UserRepositoryImpl(api, userManager)
+    fun provideUserInfoRepository(api: UserService): UserRepository {
+        return UserRepositoryImpl(api)
     }
 
     @Provides
