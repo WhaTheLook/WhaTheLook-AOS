@@ -51,7 +51,6 @@
         android:label="activity_edit_profile"
         tools:layout="@layout/activity_edit_profile">
 
-
         <argument
             android:name="user"
             app:argType="com.stopstone.whathelook.data.model.response.UserInfo" />

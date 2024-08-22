@@ -7,8 +7,10 @@ import com.stopstone.whathelook.data.model.response.UserInfo
 import com.stopstone.whathelook.domain.usecase.GetUserInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,8 +18,8 @@ import javax.inject.Inject
 class MyPageViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableSharedFlow<UserInfo>()
-    val uiState: SharedFlow<UserInfo> = _uiState.asSharedFlow()
+    private val _uiState = MutableStateFlow<UserInfo?>(null)
+    val uiState: SharedFlow<UserInfo?> = _uiState.asStateFlow()
 
     init {
         fetchUserInfo()
@@ -27,7 +29,7 @@ class MyPageViewModel @Inject constructor(
         runCatching {
             getUserInfoUseCase()
         }.onSuccess { userInfo ->
-            _uiState.emit(userInfo)
+            _uiState.value = userInfo
         }.onFailure { e ->
             Log.e("MyPageViewModel", "Error fetching user info", e)
         }

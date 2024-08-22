@@ -1,6 +1,7 @@
 package com.stopstone.whathelook.view.mypage
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +42,6 @@ class MypageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.viewPagerMypage.adapter = adapter
-
         viewModel.fetchUserInfo()
 
         lifecycleScope.launch {
@@ -62,9 +62,11 @@ class MypageFragment : Fragment() {
         binding.btnMypageEditProfile.setOnClickListener {
             lifecycleScope.launch {
                 viewModel.uiState.collect { userInfo ->
-                    val action =
-                        MypageFragmentDirections.actionMypageToEditProfileActivity(userInfo)
-                    findNavController().navigate(action)
+                    if (userInfo != null) {
+                        val action =
+                            MypageFragmentDirections.actionMypageToEditProfileActivity(userInfo)
+                        findNavController().navigate(action)
+                    }
                 }
             }
         }
@@ -72,9 +74,7 @@ class MypageFragment : Fragment() {
 
     private suspend fun collectUserInfo() {
         viewModel.uiState.collect { userInfo ->
-            withContext(Dispatchers.Main) {
-                updateUI(userInfo)
-            }
+            userInfo?.let { updateUI(it) }
         }
     }
 

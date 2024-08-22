@@ -27,6 +27,8 @@ class AuthInterceptor @Inject constructor(
 
         var response = chain.proceed(request)
 
+        Log.d("AuthInterceptor", "Response code: ${response.code}")
+        Log.d("AuthInterceptor", "Response message: ${response.message}")
         if (response.code == 401) {
             Log.d("AuthInterceptor", "Received 401 error. Attempting to refresh token.")
             response.close()
@@ -37,12 +39,16 @@ class AuthInterceptor @Inject constructor(
 
             return if (newAccessToken != null) {
                 // 새 토큰으로 요청 재시도
+                Log.d("AuthInterceptor", "Token refresh successful. New token: $newAccessToken")
                 chain.proceed(
                     originalRequest.newBuilder()
                         .header("Authorization", "Bearer $newAccessToken")
                         .build()
                 )
+
             } else {
+                // 토큰 갱신 실패 시 로그인 화면으로 이동
+                Log.d("AuthInterceptor", "Token refresh failed. Redirecting to login screen.")
                 response
             }
         }
