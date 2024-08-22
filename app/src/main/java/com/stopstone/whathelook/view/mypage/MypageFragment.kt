@@ -1,7 +1,6 @@
 package com.stopstone.whathelook.view.mypage
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +15,9 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
 import com.stopstone.whathelook.data.model.response.UserInfo
 import com.stopstone.whathelook.databinding.FragmentMypageBinding
-import com.stopstone.whathelook.view.mypage.ViewPagerAdapter.Companion.IMAGE_SIZE
 import com.stopstone.whathelook.view.mypage.viewmodel.MyPageViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MypageFragment : Fragment() {
@@ -87,8 +83,6 @@ class MypageFragment : Fragment() {
         binding.tvMypageUserName.text = userInfo.name
         Glide.with(this)
             .load(userInfo.profileImage)
-            .circleCrop()
-            .override(IMAGE_SIZE, IMAGE_SIZE)
             .into(binding.ivMypageProfileImage)
         binding.tvMypageUserPost.text = userInfo.postCount.toString()
         binding.tvMypageUserComment.text = userInfo.commentCount.toString()
@@ -104,9 +98,5 @@ class ViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
             1 -> MyCommentFragment()
             else -> throw IllegalArgumentException("Invalid position $position")
         }
-    }
-
-    companion object {
-        const val IMAGE_SIZE = 64
     }
 }
