@@ -18,6 +18,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
+
 class HomeViewModel @Inject constructor(
     private val getPostListUseCase: GetPostListUseCase,
     private val updateLikeStateUseCase: UpdateLikeStateUseCase,
@@ -25,12 +26,46 @@ class HomeViewModel @Inject constructor(
     private val _posts = MutableStateFlow<List<PostListItem>>(emptyList())
     val posts: StateFlow<List<PostListItem>> = _posts.asStateFlow()
 
-    fun loadPostList(category: String) = viewModelScope.launch {
-        val posts = getPostListUseCase.invoke(category).content
-        _posts.value = posts
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private var lastPostId: Long? = null
+    private var hasMorePosts = true
+
+    fun loadPostList(category: String) {
+        if (_isLoading.value) return
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = getPostListUseCase(category, null, 20) // 초기 로드시 20개 항목
+                _posts.value = response.content
+                lastPostId = response.content.lastOrNull()?.id
+                hasMorePosts = response.content.size == 20
+            } catch (e: Exception) {
+                // 에러 처리
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
-    // 좋아요 클릭시 상태 반영하기
+    fun loadMorePosts(category: String) {
+        if (_isLoading.value || !hasMorePosts) return
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = getPostListUseCase(category, lastPostId, 20)
+                _posts.value = _posts.value + response.content
+                lastPostId = response.content.lastOrNull()?.id
+                hasMorePosts = response.content.size == 20
+            } catch (e: Exception) {
+                // 에러 처리
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
     fun updateLikeState(postItem: PostListItem) = viewModelScope.launch {
         val userId = getUserId()
         runCatching {
@@ -43,7 +78,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // 좋아요 클릭시 상태 변경
+
     private fun updatePostsList(postId: Long, likeYN: Boolean, likeCount: Int) {
         _posts.value = _posts.value.map { post ->
             if (post.id == postId) {
@@ -54,7 +89,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // 유저 아이디 API 호출로 가져오기
     private suspend fun getUserId(): Long = suspendCoroutine { continuation ->
         UserApiClient.instance.me { user, error ->
             when {

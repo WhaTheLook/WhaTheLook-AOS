@@ -22,9 +22,11 @@ interface PostApiService {
 
     @GET("/post/postList")
     suspend fun getPostList(
-        @Query("page") page: Int = 0,
-        @Query("size") size: Int = 10,
+        @Query("lastPostId") lastPostId: Long? = null,
         @Query("category") category: String,
+        @Query("size") size: Int = 10,
+        @Query("sort") sort: String = "recent"
+
     ): PostListResponse
 
 

@@ -11,6 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.FragmentQuestionBinding
 import com.stopstone.whathelook.view.detail.PostDetailActivity
@@ -43,7 +45,6 @@ class QuestionFragment : Fragment(), OnItemClickListener {
         collectViewModel()
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -62,6 +63,23 @@ class QuestionFragment : Fragment(), OnItemClickListener {
     private fun setupRecyclerView() {
         binding.rvQuestionList.adapter = adapter
         binding.rvQuestionList.itemAnimator = null
+        binding.rvQuestionList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                    && firstVisibleItemPosition >= 0
+                    && !viewModel.isLoading.value
+                ) {
+                    Log.d("QuestionFragment", "더 많은 데이터 로드")
+                    viewModel.loadMorePosts(CATEGORY)
+                }
+            }
+        })
     }
 
     private fun collectViewModel() = lifecycleScope.launch {
@@ -72,6 +90,7 @@ class QuestionFragment : Fragment(), OnItemClickListener {
 
     private suspend fun collectPostList() {
         viewModel.posts.collect { postList ->
+            Log.d("QuestionFragment", "데이터 불러옴")
             adapter.submitList(postList)
         }
     }
