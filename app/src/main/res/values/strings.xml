@@ -10,4 +10,5 @@
     <string name="description_search_image">검색</string>
     <string name="description_btn_post_add">등록하기</string>
     <string name="description_btn_arrow_back">뒤로가기</string>
+    <string name="description_post_menu">메뉴</string>
 </resources>

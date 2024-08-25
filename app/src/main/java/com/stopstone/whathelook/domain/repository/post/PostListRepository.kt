@@ -7,4 +7,5 @@ import com.stopstone.whathelook.data.model.response.UpdateLikeResponse
 interface PostListRepository {
     suspend fun getPostList(category: String, lastPostId: Long?, size: Int): PostListResponse
     suspend fun updateLikeState(postItem: PostListItem, userId: Long): UpdateLikeResponse
+    suspend fun deletePost(postId: Long)
 }

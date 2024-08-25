@@ -10,9 +10,14 @@ import com.stopstone.whathelook.domain.repository.post.PostListRepository
 
 class PostListRepositoryImpl(
     private val postApiService: PostApiService
-): PostListRepository {
-    override suspend fun getPostList(category: String, lastPostId: Long?, size: Int): PostListResponse {
-        val postList = postApiService.getPostList(category =  category, lastPostId = lastPostId, size = size)
+) : PostListRepository {
+    override suspend fun getPostList(
+        category: String,
+        lastPostId: Long?,
+        size: Int
+    ): PostListResponse {
+        val postList =
+            postApiService.getPostList(category = category, lastPostId = lastPostId, size = size)
         Log.d("PostListRepositoryImpl", "getPostList: $postList")
         return postList
     }
@@ -25,5 +30,12 @@ class PostListRepositoryImpl(
         return likeResponse
     }
 
-
+    override suspend fun deletePost(postId: Long) {
+        try {
+            postApiService.deletePost(postId)
+        } catch (e: Exception) {
+            Log.e("PostListRepositoryImpl", "deletePost: $e")
+            throw e
+        }
+    }
 }

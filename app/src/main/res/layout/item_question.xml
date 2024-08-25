@@ -41,6 +41,19 @@
         app:layout_constraintTop_toBottomOf="@id/tv_user_name"
         tools:text="2h" />
 
+    <ImageButton
+        android:id="@+id/btn_post_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/description_post_menu"
+        android:focusable="true"
+        android:src="@drawable/ic_menu"
+        app:layout_constraintBottom_toBottomOf="@id/tv_user_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_user_name" />
+
 
     <TextView
         android:id="@+id/tv_post_content"

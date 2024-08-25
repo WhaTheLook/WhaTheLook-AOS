@@ -1,6 +1,7 @@
 package com.stopstone.whathelook.view.post.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,14 +13,14 @@ import com.stopstone.whathelook.databinding.ItemQuestionBinding
 
 class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adapter<ViewHolder>() {
     private val items: MutableList<PostListItem> = mutableListOf()
-    var onItemClick: ((PostListItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
             VIEW_TYPE_QUESTION -> QuestionViewHolder(
                 parent,
                 onClickListener = { position -> listener.onItemClick(items[position]) },
-                onLikeClickListener = { position -> listener.onLikeClick(items[position]) }
+                onLikeClickListener = { position -> listener.onLikeClick(items[position]) },
+                onMenuClickListener = { position, view -> listener.onMenuClick(items[position], view) }
             )
 
             VIEW_TYPE_ANSWER -> AnswerViewHolder(parent,
@@ -56,6 +57,7 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
         parent: ViewGroup,
         private val onClickListener: (position: Int) -> Unit,
         private val onLikeClickListener: (position: Int) -> Unit,
+        private val onMenuClickListener: (position: Int, view: android.view.View) -> Unit,
         private val binding: ItemQuestionBinding = ItemQuestionBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -73,6 +75,11 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
             binding.btnPostLike.setOnClickListener {
                 onLikeClickListener(adapterPosition)
             }
+
+            binding.btnPostMenu.setOnClickListener {
+                onMenuClickListener(adapterPosition, it)
+            }
+
 
             binding.rvPostImageList.apply {
                 adapter = postListItemImageAdapter
@@ -143,4 +150,5 @@ class PostDiffCallback(
 interface OnItemClickListener {
     fun onItemClick(postListItem: PostListItem)
     fun onLikeClick(postListItem: PostListItem)
+    fun onMenuClick(postListItem: PostListItem, view: View)
 }

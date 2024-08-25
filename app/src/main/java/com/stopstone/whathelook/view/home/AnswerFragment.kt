@@ -67,4 +67,7 @@ class AnswerFragment : Fragment(), OnItemClickListener {
 
     override fun onLikeClick(postListItem: PostListItem) {
     }
+
+    override fun onMenuClick(postListItem: PostListItem, view: View) {
+    }
 }

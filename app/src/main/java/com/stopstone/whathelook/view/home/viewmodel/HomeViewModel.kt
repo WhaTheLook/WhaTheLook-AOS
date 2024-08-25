@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kakao.sdk.user.UserApiClient
 import com.stopstone.whathelook.data.model.response.PostListItem
+import com.stopstone.whathelook.domain.usecase.common.DeletePostUseCase
 import com.stopstone.whathelook.domain.usecase.post.GetPostListUseCase
 import com.stopstone.whathelook.domain.usecase.post.UpdateLikeStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,7 @@ import kotlin.coroutines.suspendCoroutine
 class HomeViewModel @Inject constructor(
     private val getPostListUseCase: GetPostListUseCase,
     private val updateLikeStateUseCase: UpdateLikeStateUseCase,
+    private val deletePostUseCase: DeletePostUseCase,
 ) : ViewModel() {
     private val _posts = MutableStateFlow<List<PostListItem>>(emptyList())
     val posts: StateFlow<List<PostListItem>> = _posts.asStateFlow()
@@ -97,5 +99,17 @@ class HomeViewModel @Inject constructor(
                 else -> continuation.resumeWithException(IllegalStateException("User is null"))
             }
         }
+    }
+
+    fun deletePost(postItem: PostListItem) = viewModelScope.launch {
+        Log.d("HomeViewModel", "삭제 요청: $postItem")
+        runCatching { deletePostUseCase(postItem.id) }
+            .onSuccess {
+                Log.d("HomeViewModel", "삭제 성공: $postItem")
+                _posts.value = _posts.value.filter { it.id != postItem.id }
+            }
+            .onFailure {
+                Log.e("HomeViewModel", "삭제 실패: $postItem", it)
+            }
     }
 }

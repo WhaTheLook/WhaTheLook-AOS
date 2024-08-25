@@ -1,4 +1,4 @@
-package com.stopstone.whathelook.domain.usecase
+package com.stopstone.whathelook.domain.usecase.mypage
 
 import com.stopstone.whathelook.data.model.response.UserInfo
 import com.stopstone.whathelook.domain.repository.UserRepository

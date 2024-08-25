@@ -1,4 +1,4 @@
-package com.stopstone.whathelook.domain.usecase
+package com.stopstone.whathelook.domain.usecase.mypage
 
 import com.stopstone.whathelook.domain.repository.UserRepository
 import okhttp3.MultipartBody
