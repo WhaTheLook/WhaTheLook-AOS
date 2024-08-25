@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ItemAnswerBinding
+import com.stopstone.whathelook.utils.loadCenterCropImage
 
 class BookmarkAdapter: ListAdapter<PostListItem, BookmarkAdapter.BookmarkViewHolder>(BookmarkDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarkViewHolder {
@@ -26,13 +27,9 @@ class BookmarkAdapter: ListAdapter<PostListItem, BookmarkAdapter.BookmarkViewHol
     }
 
     class BookmarkViewHolder(private val binding: ItemAnswerBinding) : RecyclerView.ViewHolder(binding.root){
-        fun bind(item: PostListItem) {
-            Glide.with(binding.root)
-                .load(item.photoUrls.first())
-                .centerCrop()
-                .into(binding.ivPostImage)
+        fun bind(postListItem: PostListItem) {
+            binding.ivPostImage.loadCenterCropImage(postListItem.photoUrls.first())
         }
-
     }
 }
 

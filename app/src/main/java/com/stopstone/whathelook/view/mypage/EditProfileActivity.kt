@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navArgs
 import com.bumptech.glide.Glide
 import com.stopstone.whathelook.databinding.ActivityEditProfileBinding
+import com.stopstone.whathelook.utils.loadCircleImage
 import com.stopstone.whathelook.view.mypage.viewmodel.EditProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -103,7 +104,7 @@ class EditProfileActivity : AppCompatActivity() {
             data?.data?.let { uri ->
                 currentImageUri = uri
                 viewModel.onImageChanged()
-                Glide.with(this).load(uri).into(binding.ivEditProfileImage)
+                binding.ivEditProfileImage.loadCircleImage("$uri")
             }
         }
     }

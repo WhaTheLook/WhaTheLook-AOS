@@ -10,6 +10,9 @@ import com.bumptech.glide.Glide
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ItemAnswerBinding
 import com.stopstone.whathelook.databinding.ItemQuestionBinding
+import com.stopstone.whathelook.utils.loadCenterCropImage
+import com.stopstone.whathelook.utils.loadCircleImage
+import com.stopstone.whathelook.utils.setRelativeTimeText
 
 class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adapter<ViewHolder>() {
     private val items: MutableList<PostListItem> = mutableListOf()
@@ -20,7 +23,12 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
                 parent,
                 onClickListener = { position -> listener.onItemClick(items[position]) },
                 onLikeClickListener = { position -> listener.onLikeClick(items[position]) },
-                onMenuClickListener = { position, view -> listener.onMenuClick(items[position], view) }
+                onMenuClickListener = { position, view ->
+                    listener.onMenuClick(
+                        items[position],
+                        view
+                    )
+                }
             )
 
             VIEW_TYPE_ANSWER -> AnswerViewHolder(parent,
@@ -87,17 +95,18 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
         }
 
         fun bind(postListItem: PostListItem) {
-            Glide.with(binding.root)
-                .load(postListItem.author.profileImage)
-                .circleCrop()
-                .into(binding.ivUserProfile)
-            binding.tvUserName.text = postListItem.author.name
-            binding.tvPostTimestamp.text = postListItem.date
-            binding.tvPostContent.text = postListItem.content
-            postListItemImageAdapter.submitList(postListItem.photoUrls)
-            binding.btnPostLike.isSelected = postListItem.likeYN
-            binding.tvPostLikeCount.text = postListItem.likeCount.toString()
-            binding.tvPostCommentCount.text = postListItem.commentCount.toString()
+            with(binding) {
+                with(postListItem) {
+                    ivUserProfile.loadCircleImage(photoUrls.first())
+                    tvUserName.text = author.name
+                    tvPostTimestamp.setRelativeTimeText(date)
+                    tvPostContent.text = content
+                    postListItemImageAdapter.submitList(photoUrls)
+                    btnPostLike.isSelected = likeYN
+                    tvPostLikeCount.text = "$likeCount"
+                    tvPostCommentCount.text = "$commentCount"
+                }
+            }
         }
     }
 
@@ -117,10 +126,7 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
         }
 
         fun bind(postListItem: PostListItem) {
-            Glide.with(binding.root)
-                .load(postListItem.photoUrls.first())
-                .centerCrop()
-                .into(binding.ivPostImage)
+            binding.ivPostImage.loadCenterCropImage(postListItem.photoUrls.first())
         }
     }
 

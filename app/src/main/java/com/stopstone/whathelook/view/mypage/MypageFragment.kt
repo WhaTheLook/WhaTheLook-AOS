@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
 import com.stopstone.whathelook.data.model.response.UserInfo
 import com.stopstone.whathelook.databinding.FragmentMypageBinding
+import com.stopstone.whathelook.utils.loadCenterCropImage
 import com.stopstone.whathelook.view.mypage.viewmodel.MyPageViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -80,12 +81,14 @@ class MypageFragment : Fragment() {
     }
 
     private fun updateUI(userInfo: UserInfo) {
-        binding.tvMypageUserName.text = userInfo.name
-        Glide.with(this)
-            .load(userInfo.profileImage)
-            .into(binding.ivMypageProfileImage)
-        binding.tvMypageUserPost.text = userInfo.postCount.toString()
-        binding.tvMypageUserComment.text = userInfo.commentCount.toString()
+        with(binding) {
+            with(userInfo) {
+                tvMypageUserName.text = name
+                ivMypageProfileImage.loadCenterCropImage(profileImage)
+                tvMypageUserPost.text = "$postCount"
+                tvMypageUserComment.text = "$commentCount"
+            }
+        }
     }
 }
 

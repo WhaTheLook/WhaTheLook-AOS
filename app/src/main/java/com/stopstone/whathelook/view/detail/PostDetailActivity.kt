@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ActivityPostDetailBinding
+import com.stopstone.whathelook.utils.loadCircleImage
+import com.stopstone.whathelook.utils.setRelativeTimeText
 import com.stopstone.whathelook.view.post.adapter.PostListItemImageAdapter
 
 class PostDetailActivity : AppCompatActivity() {
@@ -34,15 +36,17 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun setupUI(postListItem: PostListItem) {
-        Glide.with(binding.root)
-            .load(postListItem.author.profileImage)
-            .circleCrop()
-            .into(binding.ivUserProfile)
-        binding.tvUserName.text = postListItem.author.name
-        binding.tvPostTimestamp.text = postListItem.date
-        binding.tvPostContent.text = postListItem.content
-        adapter.submitList(postListItem.photoUrls)
-        binding.tvPostLikeCount.text = postListItem.likeCount.toString()
-        binding.tvPostCommentCount.text = postListItem.commentCount.toString()
+        with(binding) {
+            with(postListItem) {
+                ivUserProfile.loadCircleImage(author.profileImage)
+                tvUserName.text = author.name
+                tvPostTimestamp.setRelativeTimeText(date)
+                tvPostContent.text = content
+                adapter.submitList(photoUrls)
+                tvPostLikeCount.text = "$likeCount"
+                btnPostLike.isSelected = likeYN
+                tvPostCommentCount.text = "$commentCount"
+            }
+        }
     }
 }
