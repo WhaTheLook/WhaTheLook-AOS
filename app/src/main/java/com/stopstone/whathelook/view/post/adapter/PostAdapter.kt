@@ -97,7 +97,7 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
         fun bind(postListItem: PostListItem) {
             with(binding) {
                 with(postListItem) {
-                    ivUserProfile.loadCircleImage(photoUrls.first())
+                    ivUserProfile.loadCircleImage(author.profileImage)
                     tvUserName.text = author.name
                     tvPostTimestamp.setRelativeTimeText(date)
                     tvPostContent.text = content
