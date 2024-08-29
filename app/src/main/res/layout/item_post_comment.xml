@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <ImageView
+        android:id="@+id/iv_user_profile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tv_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/iv_user_profile"
+        app:layout_constraintTop_toTopOf="@id/iv_user_profile"
+        tools:text="Username" />
+
+
+    <TextView
+        android:id="@+id/tv_post_comment_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/tv_user_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_user_name"
+        tools:text="2h" />
+
+    <ImageButton
+        android:id="@+id/btn_post_comment_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/description_post_menu"
+        android:focusable="true"
+        android:src="@drawable/ic_menu"
+        app:layout_constraintBottom_toBottomOf="@id/tv_user_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_user_name" />
+
+
+    <TextView
+        android:id="@+id/tv_post_comment_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+        app:layout_constraintTop_toBottomOf="@id/iv_user_profile"
+        tools:text="This is the content of the post. It can be multiple lines long and will wrap accordingly." />
+
+    <TextView
+        android:id="@+id/tv_post_comment_reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="답글달기"
+        android:textSize="12dp"
+        app:layout_constraintStart_toStartOf="@id/tv_post_comment_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_comment_content" />
+
+    <TextView
+        android:id="@+id/tv_post_comment_reply_visible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="-------------- 답글 보기"
+        android:textSize="12dp"
+        app:layout_constraintStart_toStartOf="@id/tv_post_comment_reply"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_comment_reply" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

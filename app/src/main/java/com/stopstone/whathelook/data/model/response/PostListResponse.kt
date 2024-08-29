@@ -29,7 +29,8 @@ data class PostListItem(
     val likeYN: Boolean,
     val commentCount: Int,
     val hashtags: List<String>,
-    val photoUrls: List<String>
+    val photoUrls: List<String>,
+    val comments: List<Comment>? = null
 ) : Parcelable
 
 @Parcelize
@@ -38,6 +39,16 @@ data class Author(
     val name: String,
     val profileImage: String
 ) : Parcelable
+
+@Parcelize
+data class Comment(
+    val id: Long,
+    val author: Author,
+    val text: String,
+    val date: String,
+    val depth: Int,
+    val replyComment: List<Comment>? = null
+): Parcelable
 
 data class Sort(
     val empty: Boolean,

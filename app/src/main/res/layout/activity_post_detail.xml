@@ -19,8 +19,8 @@
         android:id="@+id/iv_user_profile"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="12dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_post_detail"
         tools:src="@tools:sample/avatars" />
@@ -66,8 +66,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:paddingStart="24dp"
         android:orientation="horizontal"
+        android:paddingStart="24dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,4 +116,76 @@
         app:layout_constraintBottom_toBottomOf="@id/btn_post_comment"
         app:layout_constraintStart_toEndOf="@id/btn_post_comment"
         app:layout_constraintTop_toTopOf="@id/btn_post_comment" />
+
+    <TextView
+        android:id="@+id/tv_post_detail_comment_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="댓글"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/btn_post_like"
+        app:layout_constraintTop_toBottomOf="@id/btn_post_like" />
+
+    <TextView
+        android:id="@+id/tv_post_detail_comment_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="0"
+        app:layout_constraintBottom_toBottomOf="@id/tv_post_detail_comment_label"
+        app:layout_constraintStart_toEndOf="@id/tv_post_detail_comment_label"
+        app:layout_constraintTop_toTopOf="@id/tv_post_detail_comment_label" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_post_comment_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/view_post_comment_area"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_detail_comment_label"
+        tools:listitem="@layout/item_post_comment" />
+
+    <View
+        android:id="@+id/view_post_comment_area"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/et_post_comment_edit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/background_gray_400"
+        android:hint="댓글을 입력해주세요"
+        android:imeOptions="actionSend"
+        android:inputType="text"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/view_post_comment_area"
+        app:layout_constraintEnd_toEndOf="@id/view_post_comment_area"
+        app:layout_constraintStart_toStartOf="@id/view_post_comment_area"
+        app:layout_constraintTop_toTopOf="@id/view_post_comment_area" />
+
+    <ImageButton
+        android:id="@+id/btn_post_comment_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        android:padding="4dp"
+        android:src="@drawable/ic_arrow_circle_up"
+        app:layout_constraintBottom_toBottomOf="@id/et_post_comment_edit"
+        app:layout_constraintEnd_toEndOf="@id/et_post_comment_edit"
+        app:layout_constraintTop_toTopOf="@id/et_post_comment_edit" />
 </androidx.constraintlayout.widget.ConstraintLayout>

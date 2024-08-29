@@ -6,6 +6,7 @@ import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.api.LoginService
 import com.stopstone.whathelook.data.api.UserService
 import com.stopstone.whathelook.data.db.RecentSearchDao
+import com.stopstone.whathelook.data.repository.detail.DetailRepositoryImpl
 import com.stopstone.whathelook.data.repository.login.LoginRepositoryImpl
 import com.stopstone.whathelook.data.repository.post.PostListRepositoryImpl
 import com.stopstone.whathelook.domain.repository.post.PostRepository
@@ -13,6 +14,7 @@ import com.stopstone.whathelook.data.repository.post.PostRepositoryImpl
 import com.stopstone.whathelook.data.repository.search.RecentSearchRepositoryImpl
 import com.stopstone.whathelook.data.repository.UserRepositoryImpl
 import com.stopstone.whathelook.data.repository.bookmark.BookmarkRepositoryImpl
+import com.stopstone.whathelook.domain.repository.detail.DetailRepository
 import com.stopstone.whathelook.domain.repository.bookmark.BookmarkRepository
 import com.stopstone.whathelook.domain.repository.login.LoginRepository
 import com.stopstone.whathelook.domain.repository.post.PostListRepository
@@ -58,5 +60,10 @@ object RepositoryModule {
     @Singleton
     fun provideBookmarkRepository(bookmarkService: BookmarkService): BookmarkRepository =
         BookmarkRepositoryImpl(bookmarkService)
+
+    @Provides
+    @Singleton
+    fun provideDetailRepository(postApiService: PostApiService): DetailRepository =
+        DetailRepositoryImpl(postApiService)
 
 }

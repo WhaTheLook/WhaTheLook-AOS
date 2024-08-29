@@ -1,7 +1,10 @@
 package com.stopstone.whathelook.data.api
 
-import com.stopstone.whathelook.data.model.response.PostListResponse
+import com.stopstone.whathelook.data.model.request.RequestComment
 import com.stopstone.whathelook.data.model.request.UpdateLikeRequest
+import com.stopstone.whathelook.data.model.response.CommentResponse
+import com.stopstone.whathelook.data.model.response.PostDetailResponse
+import com.stopstone.whathelook.data.model.response.PostListResponse
 import com.stopstone.whathelook.data.model.response.UpdateLikeResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -22,14 +25,23 @@ interface PostApiService {
         @Part photos: List<MultipartBody.Part>
     ): String
 
+    @POST("/post/comment/create")
+    suspend fun createComment(
+        @Body requestComment: RequestComment
+    ): CommentResponse
+
     @GET("/post/postList")
     suspend fun getPostList(
         @Query("lastPostId") lastPostId: Long? = null,
         @Query("category") category: String,
         @Query("size") size: Int = 10,
         @Query("sort") sort: String = "recent"
-
     ): PostListResponse
+
+    @GET("/post/{postId}")
+    suspend fun getPostDetail(
+        @Path("postId") postId: Long
+    ): PostDetailResponse
 
 
     @POST("/post/like")
