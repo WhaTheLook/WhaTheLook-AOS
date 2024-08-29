@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ActivityPostDetailBinding
+import com.stopstone.whathelook.utils.HashtagUtils
 import com.stopstone.whathelook.utils.loadCircleImage
 import com.stopstone.whathelook.utils.setRelativeTimeText
 import com.stopstone.whathelook.view.detail.adapter.CommentAdapter
@@ -81,6 +82,14 @@ class PostDetailActivity : AppCompatActivity() {
                 btnPostLike.isSelected = likeYN
                 tvPostCommentCount.text = "$commentCount"
                 tvPostDetailCommentCount.text = "$commentCount"
+
+
+                HashtagUtils.setClickableHashtags(this@PostDetailActivity, tvPostContent, postListItem.content, postListItem.hashtags)
+
+                // 해시태그 목록 표시
+                val hashtagContent = postListItem.hashtags.joinToString(" ")
+                tvPostHashtags.text = hashtagContent
+                HashtagUtils.setClickableHashtags(this@PostDetailActivity, tvPostHashtags, hashtagContent, postListItem.hashtags)
             }
         }
     }

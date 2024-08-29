@@ -74,11 +74,22 @@
         android:layout_marginBottom="8dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/btn_post_like"
+        app:layout_constraintBottom_toTopOf="@id/tv_post_hashtags"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_post_content"
         tools:listitem="@layout/item_post_list_image" />
+
+    <TextView
+        android:id="@+id/tv_post_hashtags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/gray_500"
+        app:layout_constraintBottom_toTopOf="@id/btn_post_like"
+        app:layout_constraintStart_toStartOf="@id/btn_post_like"
+        tools:text="#해시태그1 #해시태그2" />
 
     <ImageButton
         android:id="@+id/btn_post_like"

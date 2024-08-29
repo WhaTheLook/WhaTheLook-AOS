@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.bumptech.glide.Glide
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ItemAnswerBinding
 import com.stopstone.whathelook.databinding.ItemQuestionBinding
+import com.stopstone.whathelook.utils.HashtagUtils
 import com.stopstone.whathelook.utils.loadCenterCropImage
 import com.stopstone.whathelook.utils.loadCircleImage
 import com.stopstone.whathelook.utils.setRelativeTimeText
@@ -105,6 +105,24 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
                     btnPostLike.isSelected = likeYN
                     tvPostLikeCount.text = "$likeCount"
                     tvPostCommentCount.text = "$commentCount"
+
+                    // 본문에 해시태그 적용
+                    HashtagUtils.setClickableHashtags(
+                        root.context,
+                        tvPostContent,
+                        content,
+                        hashtags
+                    )
+
+                    // 해시태그 목록 표시
+                    val hashtagContent = hashtags.joinToString(" ")
+                    tvPostHashtags.text = hashtagContent
+                    HashtagUtils.setClickableHashtags(
+                        root.context,
+                        tvPostHashtags,
+                        hashtagContent,
+                        hashtags
+                    )
                 }
             }
         }
