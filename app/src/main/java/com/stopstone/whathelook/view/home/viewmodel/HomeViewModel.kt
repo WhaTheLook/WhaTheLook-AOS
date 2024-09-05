@@ -57,7 +57,7 @@ class HomeViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 val response = getPostListUseCase(category, lastPostId, 20)
-                _posts.value = _posts.value + response.content
+                _posts.value += response.content
                 lastPostId = response.content.lastOrNull()?.id
                 hasMorePosts = response.content.size == 20
             } catch (e: Exception) {

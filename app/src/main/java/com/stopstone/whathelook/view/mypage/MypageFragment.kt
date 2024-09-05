@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
 import com.stopstone.whathelook.data.model.response.UserInfo
 import com.stopstone.whathelook.databinding.FragmentMypageBinding
@@ -41,7 +40,7 @@ class MypageFragment : Fragment() {
         binding.viewPagerMypage.adapter = adapter
         viewModel.fetchUserInfo()
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { collectUserInfo() }
             }

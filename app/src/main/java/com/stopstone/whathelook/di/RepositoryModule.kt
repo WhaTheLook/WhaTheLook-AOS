@@ -12,7 +12,7 @@ import com.stopstone.whathelook.data.repository.post.PostListRepositoryImpl
 import com.stopstone.whathelook.domain.repository.post.PostRepository
 import com.stopstone.whathelook.data.repository.post.PostRepositoryImpl
 import com.stopstone.whathelook.data.repository.search.RecentSearchRepositoryImpl
-import com.stopstone.whathelook.data.repository.UserRepositoryImpl
+import com.stopstone.whathelook.data.repository.user.UserRepositoryImpl
 import com.stopstone.whathelook.data.repository.bookmark.BookmarkRepositoryImpl
 import com.stopstone.whathelook.domain.repository.detail.DetailRepository
 import com.stopstone.whathelook.domain.repository.bookmark.BookmarkRepository
