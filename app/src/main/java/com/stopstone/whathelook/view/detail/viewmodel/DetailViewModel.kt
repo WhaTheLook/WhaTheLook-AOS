@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stopstone.whathelook.data.model.response.Comment
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
+import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.domain.usecase.detail.CreateCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.GetPostDetailUseCase
+import com.stopstone.whathelook.domain.usecase.post.UpdateLikeStateUseCase
 import com.stopstone.whathelook.utils.KakaoUserUtil.getUserId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,8 +22,9 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val getPostDetailUseCase: GetPostDetailUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
+    private val updateLikeStateUseCase: UpdateLikeStateUseCase,
 ) : ViewModel() {
-    private val _postDetail = MutableStateFlow<PostDetailResponse?>(null)
+    private val _postDetail = MutableStateFlow<PostListItem?>(null)
     val postDetail = _postDetail.asStateFlow()
 
     private val _comments = MutableStateFlow<List<Comment>>(emptyList())
@@ -61,6 +64,19 @@ class DetailViewModel @Inject constructor(
             }.onFailure {
                 Log.e("DetailViewModel", "createComment: $it")
             }
+        }
+    }
+
+
+    fun updateLikeState(postItem: PostListItem) = viewModelScope.launch {
+        val userId = getUserId()
+        runCatching {
+            val likeState = updateLikeStateUseCase(postItem, userId!!)
+            _postDetail.value = _postDetail.value?.copy(likeYN = likeState.likeYN, likeCount = likeState.likeCount)
+        }.onSuccess {
+            Log.d("HomeViewModel", "좋아요 상태 변경 성공")
+        }.onFailure { e ->
+            Log.e("HomeViewModel", "좋아요 상태 변경 성공 실패", e)
         }
     }
 }

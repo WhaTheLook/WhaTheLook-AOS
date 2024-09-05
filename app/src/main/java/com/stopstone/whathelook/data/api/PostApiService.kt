@@ -4,6 +4,7 @@ import com.stopstone.whathelook.data.model.request.RequestComment
 import com.stopstone.whathelook.data.model.request.UpdateLikeRequest
 import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
+import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.data.model.response.PostListResponse
 import com.stopstone.whathelook.data.model.response.UpdateLikeResponse
 import okhttp3.MultipartBody
@@ -41,7 +42,7 @@ interface PostApiService {
     @GET("/post/{postId}")
     suspend fun getPostDetail(
         @Path("postId") postId: Long
-    ): PostDetailResponse
+    ): PostListItem
 
 
     @POST("/post/like")

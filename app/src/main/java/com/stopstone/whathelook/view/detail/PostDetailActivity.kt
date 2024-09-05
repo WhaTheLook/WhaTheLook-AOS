@@ -59,6 +59,18 @@ class PostDetailActivity : AppCompatActivity() {
                     Toast.makeText(this@PostDetailActivity, it, Toast.LENGTH_SHORT).show()
                 }
             }
+
+            launch {
+                viewModel.postDetail.collect {
+                    it?.let {
+                        setupUI(it)
+                    }
+                }
+            }
+        }
+
+        binding.btnPostLike.setOnClickListener {
+            viewModel.updateLikeState(postListItem)
         }
 
         binding.btnPostCommentSend.setOnClickListener {

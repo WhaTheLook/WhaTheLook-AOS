@@ -5,6 +5,7 @@ import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.model.request.RequestComment
 import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
+import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.data.model.response.PostListResponse
 import com.stopstone.whathelook.domain.repository.detail.DetailRepository
 import javax.inject.Inject
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class DetailRepositoryImpl @Inject constructor(
     private val postApiService: PostApiService
 ) : DetailRepository {
-    override suspend fun getPostDetail(postId: Long): PostDetailResponse {
+    override suspend fun getPostDetail(postId: Long): PostListItem {
         return postApiService.getPostDetail(postId)
     }
 
