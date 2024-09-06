@@ -1,33 +1,26 @@
 package com.stopstone.whathelook.utils
 
-import android.util.Log
 import android.widget.TextView
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
-import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 fun TextView.setRelativeTimeText(dateString: String) {
-    try {
-        val dateFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH)
-        val date = dateFormat.parse(dateString)
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    val date = sdf.parse(dateString) ?: return
+    val now = Date()
+    val diff = now.time - date.time
+    val seconds = abs(diff) / 1000
 
-        val now = System.currentTimeMillis()
-        val timeDifference = now - (date?.time ?: now)
-
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(timeDifference)
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(timeDifference)
-        val hours = TimeUnit.MILLISECONDS.toHours(timeDifference)
-        val days = TimeUnit.MILLISECONDS.toDays(timeDifference)
-
-        val relativeTime = when {
-            days > 0 -> "${days}d"
-            hours > 0 -> "${hours}h"
-            minutes > 0 -> "${minutes}m"
-            else -> "${seconds}s"
-        }
-
-        text = relativeTime
-    } catch (e: Exception) {
-        Log.e("TextUtils", "Error parsing date: $dateString", e)
+    val relativeTime = when {
+        seconds < 60 -> "방금 전"
+        seconds < 60 * 60 -> "${seconds / 60}분 전"
+        seconds < 60 * 60 * 24 -> "${seconds / (60 * 60)}시간 전"
+        seconds < 60 * 60 * 24 * 30 -> "${seconds / (60 * 60 * 24)}일 전"
+        seconds < 60 * 60 * 24 * 365 -> "${seconds / (60 * 60 * 24 * 30)}달 전"
+        else -> "${seconds / (60 * 60 * 24 * 365)}년 전"
     }
+
+    this.text = relativeTime
 }
