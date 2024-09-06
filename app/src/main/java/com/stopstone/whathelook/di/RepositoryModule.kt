@@ -14,6 +14,8 @@ import com.stopstone.whathelook.data.repository.post.PostRepositoryImpl
 import com.stopstone.whathelook.data.repository.search.RecentSearchRepositoryImpl
 import com.stopstone.whathelook.data.repository.user.UserRepositoryImpl
 import com.stopstone.whathelook.data.repository.bookmark.BookmarkRepositoryImpl
+import com.stopstone.whathelook.data.repository.search.SearchRepositoryImpl
+import com.stopstone.whathelook.domain.repository.SearchRepository
 import com.stopstone.whathelook.domain.repository.detail.DetailRepository
 import com.stopstone.whathelook.domain.repository.bookmark.BookmarkRepository
 import com.stopstone.whathelook.domain.repository.login.LoginRepository
@@ -65,5 +67,11 @@ object RepositoryModule {
     @Singleton
     fun provideDetailRepository(postApiService: PostApiService): DetailRepository =
         DetailRepositoryImpl(postApiService)
+
+    @Provides
+    @Singleton
+    fun provideSearchRepository(postApiService: PostApiService): SearchRepository {
+        return SearchRepositoryImpl(postApiService)
+    }
 
 }

@@ -1,6 +1,8 @@
 package com.stopstone.whathelook.di
 
+import com.stopstone.whathelook.domain.repository.SearchRepository
 import com.stopstone.whathelook.domain.repository.post.PostListRepository
+import com.stopstone.whathelook.domain.usecase.SearchPostsUseCase
 import com.stopstone.whathelook.domain.usecase.post.GetPostListUseCase
 import dagger.Module
 import dagger.Provides
@@ -15,4 +17,10 @@ object UseCaseModule {
     @Singleton
     fun provideGetPostListUseCase(repository: PostListRepository): GetPostListUseCase =
         GetPostListUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSearchPostsUseCase(searchRepository: SearchRepository): SearchPostsUseCase {
+        return SearchPostsUseCase(searchRepository)
+    }
 }

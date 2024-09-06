@@ -1,45 +1,38 @@
 package com.stopstone.whathelook.view.search
 
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.commit
+import com.stopstone.whathelook.data.model.entity.RecentSearch
 import com.stopstone.whathelook.databinding.ActivitySearchBinding
-import com.stopstone.whathelook.view.search.adapter.SearchHistoryAdapter
 import com.stopstone.whathelook.view.search.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchActivity : AppCompatActivity() {
     private val binding: ActivitySearchBinding by lazy {
-        ActivitySearchBinding.inflate(
-            layoutInflater
-        )
+        ActivitySearchBinding.inflate(layoutInflater)
     }
     private val viewModel: SearchViewModel by viewModels()
-    private lateinit var searchHistoryAdapter: SearchHistoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         setupUI()
-        observeViewModel()
-        focusSearchEditText()
+        if (savedInstanceState == null) {
+            showRecentSearchFragment()
+        }
     }
 
     private fun setupUI() {
         binding.btnBack.setOnClickListener {
-            finish()
+            onBackPressed()
         }
-
 
         binding.btnSearch.setOnClickListener {
             performSearch()
@@ -53,61 +46,50 @@ class SearchActivity : AppCompatActivity() {
                 false
             }
         }
-
-        setupRecyclerView()
-
-        binding.tvClearAll.setOnClickListener {
-            viewModel.clearAllSearches()
-        }
     }
 
-    private fun setupRecyclerView() {
-        searchHistoryAdapter = SearchHistoryAdapter(
-            onItemClick = { search ->
-                binding.etSearch.setText(search.query)
-                binding.etSearch.setSelection(search.query.length)
-            },
-            onDeleteClick = { search ->
-                viewModel.deleteSearch(search)
-            }
-        )
-        binding.rvSearchHistoryList.apply {
-            adapter = searchHistoryAdapter
-            layoutManager = LinearLayoutManager(this@SearchActivity)
-        }
-    }
-
-    private fun observeViewModel() {
-        lifecycleScope.launch {
-            viewModel.recentSearches.collect { searches ->
-                if (searches.isEmpty()) {
-                    binding.groupRecentSearchesEmpty.visibility = View.VISIBLE
-                    binding.groupRecentSearches.visibility = View.GONE
-                } else {
-                    binding.groupRecentSearches.visibility = View.VISIBLE
-                    binding.groupRecentSearchesEmpty.visibility = View.GONE
-                    searchHistoryAdapter.submitList(searches)
-                }
-            }
-        }
-    }
-
-    private fun focusSearchEditText() = lifecycleScope.launch {
-        delay(300) // 약간의 지연 추가
-        binding.etSearch.requestFocus()
-        showKeyboard(binding.etSearch)
-    }
-
-    private fun performSearch() {
+    fun performSearch() {
         val query = binding.etSearch.text.toString().trim()
         if (query.isNotEmpty()) {
-            viewModel.addSearch(query)
-            binding.etSearch.text.clear()
+            viewModel.searchPosts(query)
+            showSearchResultFragment()
+            hideKeyboard()
         }
     }
 
-    private fun showKeyboard(view: View) {
+    fun setSearchQuery(query: String) {
+        binding.etSearch.setText(query)
+        binding.etSearch.setSelection(query.length)
+    }
+
+    private fun showRecentSearchFragment() {
+        supportFragmentManager.commit {
+            replace(binding.fragmentContainer.id, RecentSearchFragment.newInstance())
+        }
+    }
+
+    private fun showSearchResultFragment() {
+        supportFragmentManager.commit {
+            replace(binding.fragmentContainer.id, SearchResultFragment.newInstance())
+            addToBackStack(null)
+        }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    private fun hideKeyboard() {
         val imm = getSystemService<InputMethodManager>()
-        imm?.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+        imm?.hideSoftInputFromWindow(binding.etSearch.windowToken, 0)
+    }
+
+    fun onRecentSearchClick(recentSearch: RecentSearch) {
+        setSearchQuery(recentSearch.query)
+        performSearch()
     }
 }

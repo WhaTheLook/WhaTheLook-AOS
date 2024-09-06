@@ -6,6 +6,7 @@ import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.data.model.response.PostListResponse
+import com.stopstone.whathelook.data.model.response.SearchResponse
 import com.stopstone.whathelook.data.model.response.UpdateLikeResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -38,6 +39,15 @@ interface PostApiService {
         @Query("size") size: Int = 10,
         @Query("sort") sort: String = "recent"
     ): PostListResponse
+
+    @GET("/post/postList/{search}")
+    suspend fun searchPosts(
+        @Path("search") search: String,
+        @Query("lastPostId") lastPostId: Long? = null,
+        @Query("size") size: Int = 10,
+        @Query("sortBy") sortBy: String = "recent",
+        @Query("category") category: String? = null
+    ): SearchResponse
 
     @GET("/post/{postId}")
     suspend fun getPostDetail(
