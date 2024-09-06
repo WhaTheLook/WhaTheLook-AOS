@@ -1,6 +1,7 @@
 package com.stopstone.whathelook.utils
 
 import android.content.Context
+import android.content.Intent
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextPaint
@@ -11,6 +12,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.stopstone.whathelook.R
+import com.stopstone.whathelook.view.search.SearchActivity
 
 object HashtagUtils {
     fun setClickableHashtags(context: Context, textView: TextView, content: String, hashtags: List<String>) {
@@ -24,6 +26,9 @@ object HashtagUtils {
                     object : ClickableSpan() {
                         override fun onClick(widget: View) {
                             Log.d("HashtagUtils", "해시태그 클릭됨: $hashtag")
+                            val intent = Intent(context, SearchActivity::class.java)
+                            intent.putExtra("hashtag", hashtag)
+                            context.startActivity(intent)
                         }
 
                         override fun updateDrawState(ds: TextPaint) {
@@ -43,7 +48,7 @@ object HashtagUtils {
             override fun onTouchEvent(widget: TextView, buffer: Spannable, event: android.view.MotionEvent): Boolean {
                 val result = super.onTouchEvent(widget, buffer, event)
                 if (event.action == android.view.MotionEvent.ACTION_UP) {
-                    widget.invalidate() // 터치 종료 시 TextView를 다시 그려 배경을 제거합니다.
+                    widget.invalidate()
                 }
                 return result
             }

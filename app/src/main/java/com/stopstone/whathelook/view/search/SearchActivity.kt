@@ -27,11 +27,18 @@ class SearchActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             showRecentSearchFragment()
         }
+
+        // 해시태그가 전달되었을 경우 검색 수행 및 검색 결과 프래그먼트로 전환
+        intent.getStringExtra("hashtag")?.let { hashtag ->
+            setSearchQuery(hashtag)
+            performSearch() // 검색 수행
+            showSearchResultFragment() // 검색 결과 프래그먼트로 전환
+        }
     }
 
     private fun setupUI() {
         binding.btnBack.setOnClickListener {
-            onBackPressed()
+            finish()
         }
 
         binding.btnSearch.setOnClickListener {
@@ -70,16 +77,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showSearchResultFragment() {
         supportFragmentManager.commit {
-            replace(binding.fragmentContainer.id, SearchResultFragment.newInstance())
+            replace(binding.fragmentContainer.id, RecentSearchFragment.newInstance())
             addToBackStack(null)
-        }
-    }
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStack()
-        } else {
-            super.onBackPressed()
         }
     }
 
@@ -91,5 +90,16 @@ class SearchActivity : AppCompatActivity() {
     fun onRecentSearchClick(recentSearch: RecentSearch) {
         setSearchQuery(recentSearch.query)
         performSearch()
+    }
+
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentById(binding.fragmentContainer.id)
+        if (fragment is RecentSearchFragment) {
+            // 검색 결과 프래그먼트가 표시되고 있을 때는 액티비티를 종료
+            finish()
+        } else {
+            // 그 외의 경우 기본 동작 수행
+            super.onBackPressed()
+        }
     }
 }

@@ -23,8 +23,9 @@ import com.stopstone.whathelook.view.search.adapter.OnItemClickListener
 import com.stopstone.whathelook.view.search.adapter.SearchResultAdapter
 import com.stopstone.whathelook.view.search.viewmodel.SearchViewModel
 import kotlinx.coroutines.launch
+import androidx.activity.OnBackPressedCallback
 
-class SearchResultFragment : Fragment(), OnItemClickListener {
+class ResultSearchFragment : Fragment(), OnItemClickListener {
     private var _binding: FragmentSearchResultBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by activityViewModels()
@@ -41,6 +42,13 @@ class SearchResultFragment : Fragment(), OnItemClickListener {
         setupRecyclerView()
         observeViewModel()
         fetchCurrentUserId()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // 검색 결과 프래그먼트에서 뒤로가기를 누를 때 액티비티 종료
+                requireActivity().finish()
+            }
+        })
     }
 
     private fun setupRecyclerView() {
@@ -85,8 +93,8 @@ class SearchResultFragment : Fragment(), OnItemClickListener {
         val popup = PopupMenu(requireContext(), view)
         popup.inflate(R.menu.item_post_menu)
 
-        Log.d("QuestionFragment", "현재 사용자 ID: $currentUserId")
-        Log.d("QuestionFragment", "게시물 작성자 ID: ${postListItem.author.kakaoId.toLong()}")
+        Log.d("SearchResultFragment", "현재 사용자 ID: $currentUserId")
+        Log.d("SearchResultFragment", "게시물 작성자 ID: ${postListItem.author.kakaoId.toLong()}")
 
         // 현재 사용자가 게시물 작성자인 경우에만 삭제 메뉴 표시
         if (currentUserId != postListItem.author.kakaoId.toLong()) {
@@ -125,11 +133,11 @@ class SearchResultFragment : Fragment(), OnItemClickListener {
         try {
             currentUserId = KakaoUserUtil.getUserId()
         } catch (e: Exception) {
-            Log.e("QuestionFragment", "Failed to fetch current user ID", e)
+            Log.e("SearchResultFragment", "Failed to fetch current user ID", e)
         }
     }
 
     companion object {
-        fun newInstance() = SearchResultFragment()
+        fun newInstance() = ResultSearchFragment()
     }
 }
