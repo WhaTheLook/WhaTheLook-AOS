@@ -1,35 +1,48 @@
 package com.stopstone.whathelook.view.detail
 
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.util.Log
+import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.stopstone.whathelook.R
+import com.stopstone.whathelook.data.model.response.Comment
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ActivityPostDetailBinding
 import com.stopstone.whathelook.utils.HashtagUtils
+import com.stopstone.whathelook.utils.KakaoUserUtil
 import com.stopstone.whathelook.utils.loadCircleImage
 import com.stopstone.whathelook.utils.setRelativeTimeText
 import com.stopstone.whathelook.view.detail.adapter.CommentAdapter
+import com.stopstone.whathelook.view.detail.adapter.OnCommentClickListener
 import com.stopstone.whathelook.view.detail.viewmodel.DetailViewModel
 import com.stopstone.whathelook.view.post.adapter.PostListItemImageAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class PostDetailActivity : AppCompatActivity() {
+class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     private val binding: ActivityPostDetailBinding by lazy {
         ActivityPostDetailBinding.inflate(
             layoutInflater
         )
     }
     private val adapter: PostListItemImageAdapter by lazy { PostListItemImageAdapter() }
-    private val commentAdapter: CommentAdapter by lazy { CommentAdapter() }
+    private val commentAdapter: CommentAdapter by lazy { CommentAdapter(this) }
     private val viewModel: DetailViewModel by viewModels()
+    private var currentUserId: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        fetchCurrentUserId()
         binding.rvPostImageList.adapter = adapter
         binding.rvPostCommentList.adapter = commentAdapter
 
@@ -103,6 +116,55 @@ class PostDetailActivity : AppCompatActivity() {
                 tvPostHashtags.text = hashtagContent
                 HashtagUtils.setClickableHashtags(this@PostDetailActivity, tvPostHashtags, hashtagContent, postListItem.hashtags)
             }
+        }
+    }
+
+    override fun onMenuClick(comment: Comment, view: View) {
+        val popup = PopupMenu(this, view)
+        popup.inflate(R.menu.item_post_menu)
+
+        Log.d("QuestionFragment", "현재 사용자 ID: $currentUserId")
+        Log.d("QuestionFragment", "게시물 작성자 ID: ${comment.author.kakaoId.toLong()}")
+
+        // 현재 사용자가 게시물 작성자인 경우에만 삭제 메뉴 표시
+        if (currentUserId != comment.author.kakaoId.toLong()) {
+            popup.menu.removeItem(R.id.action_delete)
+        } else {
+            val deleteItem = popup.menu.findItem(R.id.action_delete)
+            deleteItem?.let {
+                val spanString = SpannableString(deleteItem.title.toString())
+                spanString.setSpan(
+                    ForegroundColorSpan(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.red_700
+                        )
+                    ), 0, spanString.length, 0
+                )
+                deleteItem.title = spanString
+            }
+        }
+
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_delete -> {
+                    viewModel.deleteComment(comment.id)
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        popup.show()
+    }
+
+
+    private fun fetchCurrentUserId() = lifecycleScope.launch {
+        try {
+            currentUserId = KakaoUserUtil.getUserId()
+        } catch (e: Exception) {
+            Log.e("QuestionFragment", "Failed to fetch current user ID", e)
         }
     }
 }

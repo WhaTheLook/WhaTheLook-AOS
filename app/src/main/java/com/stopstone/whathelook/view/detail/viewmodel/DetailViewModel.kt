@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stopstone.whathelook.data.model.response.Comment
-import com.stopstone.whathelook.data.model.response.PostDetailResponse
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.domain.usecase.detail.CreateCommentUseCase
+import com.stopstone.whathelook.domain.usecase.detail.DeleteCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.GetPostDetailUseCase
 import com.stopstone.whathelook.domain.usecase.post.UpdateLikeStateUseCase
 import com.stopstone.whathelook.utils.KakaoUserUtil.getUserId
@@ -23,6 +23,7 @@ class DetailViewModel @Inject constructor(
     private val getPostDetailUseCase: GetPostDetailUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
     private val updateLikeStateUseCase: UpdateLikeStateUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCase,
 ) : ViewModel() {
     private val _postDetail = MutableStateFlow<PostListItem?>(null)
     val postDetail = _postDetail.asStateFlow()
@@ -58,8 +59,16 @@ class DetailViewModel @Inject constructor(
             val userId = getUserId()!!
             runCatching {
                 createCommentUseCase(id, userId, parentId, comment)
-            }.onSuccess {
-                Log.d("DetailViewModel", "createComment: $it")
+            }.onSuccess { response ->
+                val newComment = Comment(
+                    id = response.id,
+                    author = response.author,
+                    text = response.text,
+                    date = response.date,
+                    depth = response.depth,
+                )
+                _comments.value = listOf(newComment) + _comments.value // 새 댓글을 리스트의 맨 앞에 추가
+                _postDetail.value = _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.plus(1)!!)
                 sendMessage.emit("댓글을 생성했습니다.")
             }.onFailure {
                 Log.e("DetailViewModel", "createComment: $it")
@@ -67,16 +76,31 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-
     fun updateLikeState(postItem: PostListItem) = viewModelScope.launch {
         val userId = getUserId()
         runCatching {
             val likeState = updateLikeStateUseCase(postItem, userId!!)
-            _postDetail.value = _postDetail.value?.copy(likeYN = likeState.likeYN, likeCount = likeState.likeCount)
+            _postDetail.value =
+                _postDetail.value?.copy(likeYN = likeState.likeYN, likeCount = likeState.likeCount)
         }.onSuccess {
             Log.d("HomeViewModel", "좋아요 상태 변경 성공")
         }.onFailure { e ->
             Log.e("HomeViewModel", "좋아요 상태 변경 성공 실패", e)
         }
     }
+
+    fun deleteComment(commentId: Long) {
+        viewModelScope.launch {
+            runCatching {
+                deleteCommentUseCase(commentId)
+            }.onSuccess {
+                _comments.value = _comments.value.filter { it.id != commentId } // 댓글 목록 업데이트
+                _postDetail.value = _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.minus(1)!!)
+                sendMessage.emit("댓글을 삭제했습니다.")
+            }.onFailure {
+                Log.e("DetailViewModel", "deleteComment: $it")
+            }
+        }
+    }
+
 }

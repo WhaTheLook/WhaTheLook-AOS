@@ -64,4 +64,10 @@ interface PostApiService {
     suspend fun deletePost(
         @Path("postId") postId: Long
     ): String
+
+    @DELETE("/post/{commentId}/delete")
+    suspend fun deleteComment(
+        @Path("commentId") commentId: Long
+    ): String
+
 }

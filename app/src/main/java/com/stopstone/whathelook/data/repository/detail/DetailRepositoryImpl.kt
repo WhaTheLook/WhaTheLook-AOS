@@ -32,4 +32,8 @@ class DetailRepositoryImpl @Inject constructor(
         Log.d("DetailRepositoryImpl", "createComment: $response")
         return response
     }
+
+    override suspend fun deleteComment(commentId: Long): String {
+        return postApiService.deleteComment(commentId)
+    }
 }

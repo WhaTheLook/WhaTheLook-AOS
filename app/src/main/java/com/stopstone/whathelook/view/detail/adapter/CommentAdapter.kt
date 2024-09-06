@@ -1,14 +1,17 @@
 package com.stopstone.whathelook.view.detail.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.stopstone.whathelook.data.model.response.Comment
+import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ItemPostCommentBinding
 import com.stopstone.whathelook.utils.loadCircleImage
 import com.stopstone.whathelook.utils.setRelativeTimeText
 
-class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
+class CommentAdapter(private val listener: OnCommentClickListener) :
+    RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
     private val commentList = mutableListOf<Comment>()
 
     override fun onCreateViewHolder(
@@ -16,11 +19,8 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
         viewType: Int
     ): CommentViewHolder {
         return CommentViewHolder(
-            ItemPostCommentBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
+            parent,
+            onCommentClickListener = { position, view -> listener.onMenuClick(commentList[position], view) }
         )
     }
 
@@ -38,7 +38,15 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
         notifyDataSetChanged()
     }
 
-    class CommentViewHolder(private val binding: ItemPostCommentBinding) :
+    class CommentViewHolder(
+        parent: ViewGroup,
+        private val binding: ItemPostCommentBinding = ItemPostCommentBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        ),
+        private val onCommentClickListener: (position: Int, view: View) -> Unit,
+    ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(comment: Comment) {
             binding.tvUserName.text = comment.author.name
@@ -46,5 +54,15 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
             binding.tvPostCommentContent.text = comment.text
             binding.tvPostCommentTimestamp.setRelativeTimeText(comment.date)
         }
+
+        init {
+            binding.btnPostCommentMenu.setOnClickListener {
+                onCommentClickListener(adapterPosition, it)
+            }
+        }
     }
+}
+
+interface OnCommentClickListener {
+    fun onMenuClick(comment: Comment, view: View)
 }
