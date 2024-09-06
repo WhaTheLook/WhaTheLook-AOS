@@ -47,10 +47,15 @@ class QuestionFragment : Fragment(), OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadPostList(CATEGORY)
+        setupSwipeRefresh()
         setupRecyclerView()
         collectViewModel()
         fetchCurrentUserId()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshData()
     }
 
     override fun onDestroyView() {
@@ -100,7 +105,6 @@ class QuestionFragment : Fragment(), OnItemClickListener {
                     viewModel.deletePost(postListItem)
                     true
                 }
-
                 else -> false
             }
         }
@@ -108,6 +112,15 @@ class QuestionFragment : Fragment(), OnItemClickListener {
         popup.show()
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
+    }
+
+    private fun refreshData() {
+        viewModel.loadPostList(CATEGORY)
+    }
 
     private fun setupRecyclerView() {
         binding.rvQuestionList.adapter = adapter
@@ -134,6 +147,7 @@ class QuestionFragment : Fragment(), OnItemClickListener {
     private fun collectViewModel() = lifecycleScope.launch {
         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             launch { collectPostList() }
+            launch { collectLoadingState() }
         }
     }
 
@@ -141,6 +155,12 @@ class QuestionFragment : Fragment(), OnItemClickListener {
         viewModel.posts.collect { postList ->
             Log.d("QuestionFragment", "데이터 불러옴")
             adapter.submitList(postList)
+        }
+    }
+
+    private suspend fun collectLoadingState() {
+        viewModel.isLoading.collect { isLoading ->
+            binding.swipeRefreshLayout.isRefreshing = isLoading
         }
     }
 

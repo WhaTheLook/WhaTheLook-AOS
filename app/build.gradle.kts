@@ -61,7 +61,7 @@ android {
 
 dependencies {
     implementation (libs.androidx.datastore.preferences)
-
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     // 카카오 로그인 API 모듈
     implementation(libs.v2.user)
 
