@@ -42,7 +42,7 @@
         tools:layout="@layout/activity_post" />
     <activity
         android:id="@+id/navigation_search"
-        android:name="com.stopstone.whathelook.view.splash.SplashActivity"
+        android:name="com.stopstone.whathelook.view.search.SearchActivity"
         android:label="activity_search"
         tools:layout="@layout/activity_search" />
     <activity
