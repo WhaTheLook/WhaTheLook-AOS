@@ -15,152 +15,168 @@
         app:navigationIcon="@drawable/ic_arrow_back"
         app:title="게시글" />
 
-    <ImageView
-        android:id="@+id/iv_user_profile"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_post_detail"
-        tools:src="@tools:sample/avatars" />
-
-    <TextView
-        android:id="@+id/tv_user_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/iv_user_profile"
-        app:layout_constraintTop_toTopOf="@id/iv_user_profile"
-        tools:text="Username" />
-
-
-    <TextView
-        android:id="@+id/tv_post_timestamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@id/tv_user_name"
-        app:layout_constraintTop_toBottomOf="@id/tv_user_name"
-        tools:text="2h" />
-
-
-    <TextView
-        android:id="@+id/tv_post_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textColor="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
-        app:layout_constraintTop_toBottomOf="@id/iv_user_profile"
-        tools:text="This is the content of the post. It can be multiple lines long and will wrap accordingly." />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_post_image_list"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="horizontal"
-        android:paddingStart="24dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_post_content"
-        tools:listitem="@layout/item_post_list_image" />
-
-    <TextView
-        android:id="@+id/tv_post_hashtags"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
-        android:textColor="@color/gray_500"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_post_image_list"
-        tools:text="#해시태그1 #해시태그2" />
-
-    <ImageButton
-        android:id="@+id/btn_post_like"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/selector_icon_favorite"
-        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
-        app:layout_constraintTop_toBottomOf="@id/tv_post_hashtags" />
-
-    <TextView
-        android:id="@+id/tv_post_like_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
-        android:text="0"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
-        app:layout_constraintStart_toEndOf="@id/btn_post_like"
-        app:layout_constraintTop_toTopOf="@id/btn_post_like" />
-
-    <ImageButton
-        android:id="@+id/btn_post_comment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_comment"
-        app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
-        app:layout_constraintStart_toEndOf="@id/tv_post_like_count"
-        app:layout_constraintTop_toTopOf="@id/btn_post_like" />
-
-    <TextView
-        android:id="@+id/tv_post_comment_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
-        android:text="0"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@id/btn_post_comment"
-        app:layout_constraintStart_toEndOf="@id/btn_post_comment"
-        app:layout_constraintTop_toTopOf="@id/btn_post_comment" />
-
-    <TextView
-        android:id="@+id/tv_post_detail_comment_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="댓글"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/btn_post_like"
-        app:layout_constraintTop_toBottomOf="@id/btn_post_like" />
-
-    <TextView
-        android:id="@+id/tv_post_detail_comment_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="0"
-        app:layout_constraintBottom_toBottomOf="@id/tv_post_detail_comment_label"
-        app:layout_constraintStart_toEndOf="@id/tv_post_detail_comment_label"
-        app:layout_constraintTop_toTopOf="@id/tv_post_detail_comment_label" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_post_comment_list"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/view_post_comment_area"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_post_detail_comment_label"
-        tools:listitem="@layout/item_post_comment" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar_post_detail">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_user_profile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar_post_detail"
+                tools:src="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/tv_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/iv_user_profile"
+                app:layout_constraintTop_toTopOf="@id/iv_user_profile"
+                tools:text="Username" />
+
+            <TextView
+                android:id="@+id/tv_post_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@id/tv_user_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_user_name"
+                tools:text="2h" />
+
+            <TextView
+                android:id="@+id/tv_post_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+                app:layout_constraintTop_toBottomOf="@id/iv_user_profile"
+                tools:text="This is the content of the post. It can be multiple lines long and will wrap accordingly." />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_post_image_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                android:paddingStart="24dp"
+                android:scrollbars="none"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_post_content"
+                tools:listitem="@layout/item_post_list_image" />
+
+            <TextView
+                android:id="@+id/tv_post_hashtags"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/gray_500"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rv_post_image_list"
+                tools:text="#해시태그1 #해시태그2" />
+
+            <ImageButton
+                android:id="@+id/btn_post_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/selector_icon_favorite"
+                app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+                app:layout_constraintTop_toBottomOf="@id/tv_post_hashtags" />
+
+            <TextView
+                android:id="@+id/tv_post_like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:text="0"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
+                app:layout_constraintStart_toEndOf="@id/btn_post_like"
+                app:layout_constraintTop_toTopOf="@id/btn_post_like" />
+
+            <ImageButton
+                android:id="@+id/btn_post_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_comment"
+                app:layout_constraintBottom_toBottomOf="@id/btn_post_like"
+                app:layout_constraintStart_toEndOf="@id/tv_post_like_count"
+                app:layout_constraintTop_toTopOf="@id/btn_post_like" />
+
+            <TextView
+                android:id="@+id/tv_post_comment_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:text="0"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@id/btn_post_comment"
+                app:layout_constraintStart_toEndOf="@id/btn_post_comment"
+                app:layout_constraintTop_toTopOf="@id/btn_post_comment" />
+
+            <TextView
+                android:id="@+id/tv_post_detail_comment_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="댓글"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/btn_post_like"
+                app:layout_constraintTop_toBottomOf="@id/btn_post_like" />
+
+            <TextView
+                android:id="@+id/tv_post_detail_comment_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="0"
+                app:layout_constraintBottom_toBottomOf="@id/tv_post_detail_comment_label"
+                app:layout_constraintStart_toEndOf="@id/tv_post_detail_comment_label"
+                app:layout_constraintTop_toTopOf="@id/tv_post_detail_comment_label" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_post_comment_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:scrollbars="none"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_post_detail_comment_label"
+                tools:listitem="@layout/item_post_comment" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <View
         android:id="@+id/view_post_comment_area"
