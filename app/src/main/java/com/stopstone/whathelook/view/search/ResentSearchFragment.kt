@@ -1,9 +1,12 @@
 package com.stopstone.whathelook.view.search
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -28,6 +31,7 @@ class RecentSearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         observeViewModel()
+        showKeyboard()
 
         binding.tvClearAll.setOnClickListener {
             viewModel.clearAllSearches()
@@ -67,6 +71,10 @@ class RecentSearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showKeyboard() {
+        (activity as? SearchActivity)?.showKeyboard()
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package com.stopstone.whathelook.view.search
 
+import android.content.Context
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -36,6 +37,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        showKeyboard()
         binding.btnBack.setOnClickListener {
             finish()
         }
@@ -100,5 +102,14 @@ class SearchActivity : AppCompatActivity() {
             // 그 외의 경우 기본 동작 수행
             super.onBackPressed()
         }
+    }
+
+    fun showKeyboard() {
+        val view = binding.etSearch
+        view.requestFocus()
+        view.postDelayed({
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+        }, 100)
     }
 }
