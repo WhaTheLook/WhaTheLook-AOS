@@ -22,7 +22,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
         setupUI()
         if (savedInstanceState == null) {
             showRecentSearchFragment()
@@ -55,7 +54,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    fun performSearch() {
+    private fun performSearch() {
         val query = binding.etSearch.text.toString().trim()
         if (query.isNotEmpty()) {
             viewModel.searchPosts(query)
@@ -64,7 +63,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    fun setSearchQuery(query: String) {
+    private fun setSearchQuery(query: String) {
         binding.etSearch.setText(query)
         binding.etSearch.setSelection(query.length)
     }
@@ -77,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showSearchResultFragment() {
         supportFragmentManager.commit {
-            replace(binding.fragmentContainer.id, RecentSearchFragment.newInstance())
+            replace(binding.fragmentContainer.id, ResultSearchFragment.newInstance())
             addToBackStack(null)
         }
     }
