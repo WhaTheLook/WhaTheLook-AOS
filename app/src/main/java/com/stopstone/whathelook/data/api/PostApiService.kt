@@ -1,6 +1,7 @@
 package com.stopstone.whathelook.data.api
 
 import com.stopstone.whathelook.data.model.request.RequestComment
+import com.stopstone.whathelook.data.model.request.RequestUpdateComment
 import com.stopstone.whathelook.data.model.request.UpdateLikeRequest
 import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
@@ -15,6 +16,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -59,6 +61,12 @@ interface PostApiService {
     suspend fun updateLike(
         @Body requestLike: UpdateLikeRequest
     ): UpdateLikeResponse
+
+    @PUT("/post/{commentId}/update")
+    suspend fun updateComment(
+        @Path("commentId") commentId: Long,
+        @Body requestComment: RequestUpdateComment
+    ): String
 
     @DELETE("/post/delete/{postId}")
     suspend fun deletePost(

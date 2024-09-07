@@ -8,6 +8,7 @@ import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.domain.usecase.detail.CreateCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.DeleteCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.GetPostDetailUseCase
+import com.stopstone.whathelook.domain.usecase.detail.UpdateCommentUseCase
 import com.stopstone.whathelook.domain.usecase.post.UpdateLikeStateUseCase
 import com.stopstone.whathelook.utils.KakaoUserUtil.getUserId
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ class DetailViewModel @Inject constructor(
     private val createCommentUseCase: CreateCommentUseCase,
     private val updateLikeStateUseCase: UpdateLikeStateUseCase,
     private val deleteCommentUseCase: DeleteCommentUseCase,
+    private val updateCommentUseCase: UpdateCommentUseCase,
 ) : ViewModel() {
     private val _postDetail = MutableStateFlow<PostListItem?>(null)
     val postDetail = _postDetail.asStateFlow()
@@ -54,11 +56,10 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun createComment(id: Long, comment: String, parentId: Long? = null) {
+    private fun createComment(postId: Long, userId: Long, parentId: Long?, comment: String) {
         viewModelScope.launch {
-            val userId = getUserId()!!
             runCatching {
-                createCommentUseCase(id, userId, parentId, comment)
+                createCommentUseCase(postId, userId, parentId, comment)
             }.onSuccess { response ->
                 val newComment = Comment(
                     id = response.id,
@@ -68,10 +69,40 @@ class DetailViewModel @Inject constructor(
                     depth = response.depth,
                 )
                 _comments.value = listOf(newComment) + _comments.value // 새 댓글을 리스트의 맨 앞에 추가
-                _postDetail.value = _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.plus(1)!!)
+                _postDetail.value =
+                    _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.plus(1)!!)
                 sendMessage.emit("댓글을 생성했습니다.")
             }.onFailure {
                 Log.e("DetailViewModel", "createComment: $it")
+            }
+        }
+    }
+
+
+    private fun updateComment(commentId: Long, newText: String) {
+        viewModelScope.launch {
+            runCatching {
+                updateCommentUseCase(commentId, newText)
+            }.onSuccess {
+                val updatedComments = _comments.value.map { comment ->
+                    if (comment.id == commentId) comment.copy(text = newText) else comment
+                }
+                _comments.value = updatedComments
+                sendMessage.emit("댓글을 수정했습니다.")
+            }.onFailure {
+                Log.e("DetailViewModel", "updateComment: $it")
+                sendMessage.emit("댓글 수정에 실패했습니다.")
+            }
+        }
+    }
+
+    fun createOrUpdateComment(postId: Long, commentId: Long?, comment: String) {
+        viewModelScope.launch {
+            val userId = getUserId()!!
+            if (commentId == null) {
+                createComment(postId, userId, null, comment)
+            } else {
+                updateComment(commentId, comment)
             }
         }
     }
@@ -95,7 +126,8 @@ class DetailViewModel @Inject constructor(
                 deleteCommentUseCase(commentId)
             }.onSuccess {
                 _comments.value = _comments.value.filter { it.id != commentId } // 댓글 목록 업데이트
-                _postDetail.value = _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.minus(1)!!)
+                _postDetail.value =
+                    _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.minus(1)!!)
                 sendMessage.emit("댓글을 삭제했습니다.")
             }.onFailure {
                 Log.e("DetailViewModel", "deleteComment: $it")

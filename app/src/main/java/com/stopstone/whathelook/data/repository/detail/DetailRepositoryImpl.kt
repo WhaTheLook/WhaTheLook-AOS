@@ -3,6 +3,7 @@ package com.stopstone.whathelook.data.repository.detail
 import android.util.Log
 import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.model.request.RequestComment
+import com.stopstone.whathelook.data.model.request.RequestUpdateComment
 import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
 import com.stopstone.whathelook.data.model.response.PostListItem
@@ -28,12 +29,20 @@ class DetailRepositoryImpl @Inject constructor(
             userId = userId,
             text = text
         )
-        val response =  postApiService.createComment(requestComment)
+        val response = postApiService.createComment(requestComment)
         Log.d("DetailRepositoryImpl", "createComment: $response")
         return response
     }
 
     override suspend fun deleteComment(commentId: Long): String {
         return postApiService.deleteComment(commentId)
+    }
+
+    override suspend fun updateComment(commentId: Long, text: String): String {
+        val request = RequestUpdateComment(
+            commentId = commentId,
+            text = text
+        )
+        return postApiService.updateComment(commentId, request)
     }
 }

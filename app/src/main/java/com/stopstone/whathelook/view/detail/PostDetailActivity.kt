@@ -1,16 +1,18 @@
 package com.stopstone.whathelook.view.detail
 
+import android.content.Context
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.lifecycle.lifecycleScope
 import com.stopstone.whathelook.R
 import com.stopstone.whathelook.data.model.response.Comment
@@ -38,6 +40,7 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     private val commentAdapter: CommentAdapter by lazy { CommentAdapter(this) }
     private val viewModel: DetailViewModel by viewModels()
     private var currentUserId: Long? = null
+    private var currentEditingCommentId: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +92,12 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         binding.btnPostCommentSend.setOnClickListener {
             val comment = binding.etPostCommentEdit.text.toString()
             if (comment.isNotEmpty()) {
-                viewModel.createComment(postListItem.id, comment)
+                val postId =
+                    intent.getParcelableExtra<PostListItem>("post")?.id ?: return@setOnClickListener
+                viewModel.createOrUpdateComment(postId, currentEditingCommentId, comment)
+                hideKeyboard()
                 binding.etPostCommentEdit.text.clear()
+                currentEditingCommentId = null
             }
         }
     }
@@ -108,29 +115,35 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 tvPostCommentCount.text = "$commentCount"
                 tvPostDetailCommentCount.text = "$commentCount"
 
-
-                HashtagUtils.setClickableHashtags(this@PostDetailActivity, tvPostContent, postListItem.content, postListItem.hashtags)
+                HashtagUtils.setClickableHashtags(
+                    this@PostDetailActivity,
+                    tvPostContent,
+                    postListItem.content,
+                    postListItem.hashtags
+                )
 
                 // 해시태그 목록 표시
                 val hashtagContent = postListItem.hashtags.joinToString(" ")
                 tvPostHashtags.text = hashtagContent
-                HashtagUtils.setClickableHashtags(this@PostDetailActivity, tvPostHashtags, hashtagContent, postListItem.hashtags)
+                HashtagUtils.setClickableHashtags(
+                    this@PostDetailActivity,
+                    tvPostHashtags,
+                    hashtagContent,
+                    postListItem.hashtags
+                )
             }
         }
     }
 
     override fun onMenuClick(comment: Comment, view: View) {
         val popup = PopupMenu(this, view)
-        popup.inflate(R.menu.item_post_menu)
+        popup.inflate(R.menu.item_comment_menu)
 
-        Log.d("QuestionFragment", "현재 사용자 ID: $currentUserId")
-        Log.d("QuestionFragment", "게시물 작성자 ID: ${comment.author.kakaoId.toLong()}")
-
-        // 현재 사용자가 게시물 작성자인 경우에만 삭제 메뉴 표시
         if (currentUserId != comment.author.kakaoId.toLong()) {
-            popup.menu.removeItem(R.id.action_delete)
+            popup.menu.removeItem(R.id.action_comment_delete)
+            popup.menu.removeItem(R.id.action_comment_update)
         } else {
-            val deleteItem = popup.menu.findItem(R.id.action_delete)
+            val deleteItem = popup.menu.findItem(R.id.action_comment_delete)
             deleteItem?.let {
                 val spanString = SpannableString(deleteItem.title.toString())
                 spanString.setSpan(
@@ -147,8 +160,15 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.action_delete -> {
+                R.id.action_comment_delete -> {
                     viewModel.deleteComment(comment.id)
+                    true
+                }
+
+                R.id.action_comment_update -> {
+                    currentEditingCommentId = comment.id
+                    binding.etPostCommentEdit.requestFocus()
+                    showKeyboard()
                     true
                 }
 
@@ -159,12 +179,25 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         popup.show()
     }
 
-
     private fun fetchCurrentUserId() = lifecycleScope.launch {
         try {
             currentUserId = KakaoUserUtil.getUserId()
         } catch (e: Exception) {
             Log.e("QuestionFragment", "Failed to fetch current user ID", e)
         }
+    }
+
+    private fun showKeyboard() {
+        val view = binding.etPostCommentEdit
+        view.requestFocus()
+        view.postDelayed({
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+        }, 100)
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService<InputMethodManager>()
+        imm?.hideSoftInputFromWindow(binding.etPostCommentEdit.windowToken, 0)
     }
 }

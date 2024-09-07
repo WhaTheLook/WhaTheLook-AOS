@@ -27,7 +27,7 @@ class AuthInterceptor @Inject constructor(
         Log.d(TAG, "원본 요청 URL: ${originalRequest.url}")
 
         val accessToken = tokenManager.getAccessToken()
-        Log.d(TAG, "저장된 액세스 토큰: ${accessToken?.take(10)}...")
+        Log.d(TAG, "저장된 액세스 토큰: $accessToken")
 
         val request = if (!accessToken.isNullOrEmpty()) {
             Log.d(TAG, "액세스 토큰이 존재합니다. 요청에 토큰을 추가합니다.")

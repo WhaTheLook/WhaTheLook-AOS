@@ -53,6 +53,9 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
             binding.ivUserProfile.loadCircleImage(comment.author.profileImage)
             binding.tvPostCommentContent.text = comment.text
             binding.tvPostCommentTimestamp.setRelativeTimeText(comment.date)
+
+            binding.root.isClickable = false
+            binding.root.isFocusable = false
         }
 
         init {
