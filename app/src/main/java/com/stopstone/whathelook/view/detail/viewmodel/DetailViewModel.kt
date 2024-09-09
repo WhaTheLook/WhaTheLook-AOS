@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stopstone.whathelook.data.model.response.Comment
 import com.stopstone.whathelook.data.model.response.PostListItem
+import com.stopstone.whathelook.domain.event.DetailEvent
+import com.stopstone.whathelook.domain.usecase.common.DeletePostUseCase
 import com.stopstone.whathelook.domain.usecase.detail.CreateCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.DeleteCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.GetPostDetailUseCase
@@ -24,8 +26,9 @@ class DetailViewModel @Inject constructor(
     private val getPostDetailUseCase: GetPostDetailUseCase,
     private val createCommentUseCase: CreateCommentUseCase,
     private val updateLikeStateUseCase: UpdateLikeStateUseCase,
-    private val deleteCommentUseCase: DeleteCommentUseCase,
     private val updateCommentUseCase: UpdateCommentUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCase,
+    private val deletePostUseCase: DeletePostUseCase,
 ) : ViewModel() {
     private val _postDetail = MutableStateFlow<PostListItem?>(null)
     val postDetail = _postDetail.asStateFlow()
@@ -35,6 +38,9 @@ class DetailViewModel @Inject constructor(
 
     private val sendMessage = MutableSharedFlow<String>()
     val message = sendMessage.asSharedFlow()
+
+    private val _event = MutableSharedFlow<DetailEvent>()
+    val event = _event.asSharedFlow()
 
     fun getPostDetail(postId: Long) {
         viewModelScope.launch {
@@ -58,6 +64,7 @@ class DetailViewModel @Inject constructor(
 
     private fun createComment(postId: Long, userId: Long, parentId: Long?, comment: String) {
         viewModelScope.launch {
+            val userId = getUserId()!!
             runCatching {
                 createCommentUseCase(postId, userId, parentId, comment)
             }.onSuccess { response ->
@@ -126,11 +133,21 @@ class DetailViewModel @Inject constructor(
                 deleteCommentUseCase(commentId)
             }.onSuccess {
                 _comments.value = _comments.value.filter { it.id != commentId } // 댓글 목록 업데이트
-                _postDetail.value =
-                    _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.minus(1)!!)
+                _postDetail.value = _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.minus(1)!!)
                 sendMessage.emit("댓글을 삭제했습니다.")
             }.onFailure {
                 Log.e("DetailViewModel", "deleteComment: $it")
+            }
+        }
+    }
+
+    fun deletePost(postId: Long) {
+        viewModelScope.launch {
+            deletePostUseCase(postId).collect { event ->
+                _event.emit(event)
+                when (event) {
+                    is DetailEvent.FinishActivity -> sendMessage.emit("게시물이 삭제되었습니다.")
+                }
             }
         }
     }

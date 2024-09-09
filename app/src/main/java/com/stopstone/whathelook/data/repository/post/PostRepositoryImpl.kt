@@ -66,4 +66,11 @@ class PostRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun deletePost(postId: Long) = withContext(Dispatchers.IO) {
+        val response = postApiService.deletePost(postId)
+        if (response.isEmpty()) {
+            throw Exception("Failed to delete post")
+        }
+    }
 }

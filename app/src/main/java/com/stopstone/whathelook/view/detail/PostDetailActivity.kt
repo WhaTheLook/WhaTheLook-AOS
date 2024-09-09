@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
@@ -18,6 +20,7 @@ import com.stopstone.whathelook.R
 import com.stopstone.whathelook.data.model.response.Comment
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ActivityPostDetailBinding
+import com.stopstone.whathelook.domain.event.DetailEvent
 import com.stopstone.whathelook.utils.HashtagUtils
 import com.stopstone.whathelook.utils.KakaoUserUtil
 import com.stopstone.whathelook.utils.loadCircleImage
@@ -45,6 +48,11 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbarPostDetail)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+
         fetchCurrentUserId()
         binding.rvPostImageList.adapter = adapter
         binding.rvPostCommentList.adapter = commentAdapter
@@ -83,6 +91,15 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                     }
                 }
             }
+
+            lifecycleScope.launch {
+                viewModel.event.collect { event ->
+                    when (event) {
+                        is DetailEvent.FinishActivity -> finish()
+                    }
+                }
+            }
+
         }
 
         binding.btnPostLike.setOnClickListener {
@@ -135,27 +152,76 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.item_post_menu, menu)
+
+        val deleteItem = menu.findItem(R.id.action_delete)
+        val postListItem = viewModel.postDetail.value
+
+        // currentUserId나 postListItem이 null이면 삭제 메뉴를 숨깁니다.
+        if (currentUserId == null || postListItem == null) {
+            deleteItem.isVisible = false
+            return true
+        }
+
+        // 현재 사용자가 게시물 작성자인 경우에만 삭제 메뉴를 표시
+        deleteItem.isVisible = (currentUserId == postListItem.author.kakaoId.toLong())
+
+        if (deleteItem.isVisible) {
+            val spanString = SpannableString(deleteItem.title.toString())
+            spanString.setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(this, R.color.red_700)),
+                0,
+                spanString.length,
+                0
+            )
+            deleteItem.title = spanString
+        }
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+
+            R.id.action_delete -> {
+                val postListItem = viewModel.postDetail.value
+                postListItem?.let {
+                    if (currentUserId == it.author.kakaoId.toLong()) {
+                        viewModel.deletePost(it.id)
+                    } else {
+                        Toast.makeText(this, "삭제 권한이 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onMenuClick(comment: Comment, view: View) {
         val popup = PopupMenu(this, view)
-        popup.inflate(R.menu.item_comment_menu)
-
         if (currentUserId != comment.author.kakaoId.toLong()) {
-            popup.menu.removeItem(R.id.action_comment_delete)
-            popup.menu.removeItem(R.id.action_comment_update)
-        } else {
-            val deleteItem = popup.menu.findItem(R.id.action_comment_delete)
-            deleteItem?.let {
-                val spanString = SpannableString(deleteItem.title.toString())
-                spanString.setSpan(
-                    ForegroundColorSpan(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.red_700
-                        )
-                    ), 0, spanString.length, 0
-                )
-                deleteItem.title = spanString
-            }
+            popup.inflate(R.menu.item_comment_menu)
+        }
+
+        val deleteItem = popup.menu.findItem(R.id.action_comment_delete)
+        deleteItem?.let {
+            val spanString = SpannableString(deleteItem.title.toString())
+            spanString.setSpan(
+                ForegroundColorSpan(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.red_700
+                    )
+                ), 0, spanString.length, 0
+            )
+            deleteItem.title = spanString
         }
 
         popup.setOnMenuItemClickListener { menuItem ->
@@ -179,11 +245,14 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         popup.show()
     }
 
-    private fun fetchCurrentUserId() = lifecycleScope.launch {
-        try {
-            currentUserId = KakaoUserUtil.getUserId()
-        } catch (e: Exception) {
-            Log.e("QuestionFragment", "Failed to fetch current user ID", e)
+    private fun fetchCurrentUserId() {
+        lifecycleScope.launch {
+            try {
+                currentUserId = KakaoUserUtil.getUserId()
+                invalidateOptionsMenu() // 메뉴를 다시 생성
+            } catch (e: Exception) {
+                Log.e("PostDetailActivity", "Failed to fetch current user ID", e)
+            }
         }
     }
 

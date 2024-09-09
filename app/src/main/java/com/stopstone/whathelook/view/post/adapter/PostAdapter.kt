@@ -2,6 +2,7 @@ package com.stopstone.whathelook.view.post.adapter
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -23,12 +24,6 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
                 parent,
                 onClickListener = { position -> listener.onItemClick(items[position]) },
                 onLikeClickListener = { position -> listener.onLikeClick(items[position]) },
-                onMenuClickListener = { position, view ->
-                    listener.onMenuClick(
-                        items[position],
-                        view
-                    )
-                }
             )
 
             VIEW_TYPE_ANSWER -> AnswerViewHolder(parent,
@@ -65,7 +60,6 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
         parent: ViewGroup,
         private val onClickListener: (position: Int) -> Unit,
         private val onLikeClickListener: (position: Int) -> Unit,
-        private val onMenuClickListener: (position: Int, view: android.view.View) -> Unit,
         private val binding: ItemQuestionBinding = ItemQuestionBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -84,11 +78,6 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
                 onLikeClickListener(adapterPosition)
             }
 
-            binding.btnPostMenu.setOnClickListener {
-                onMenuClickListener(adapterPosition, it)
-            }
-
-
             binding.rvPostImageList.apply {
                 adapter = postListItemImageAdapter
             }
@@ -96,6 +85,7 @@ class PostAdapter(private val listener: OnItemClickListener) : RecyclerView.Adap
 
         fun bind(postListItem: PostListItem) {
             with(binding) {
+                binding.btnPostMenu.visibility = GONE
                 with(postListItem) {
                     ivUserProfile.loadCircleImage(author.profileImage)
                     tvUserName.text = author.name
@@ -174,5 +164,4 @@ class PostDiffCallback(
 interface OnItemClickListener {
     fun onItemClick(postListItem: PostListItem)
     fun onLikeClick(postListItem: PostListItem)
-    fun onMenuClick(postListItem: PostListItem, view: View)
 }
