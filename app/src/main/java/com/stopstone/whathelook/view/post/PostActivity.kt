@@ -1,214 +1,166 @@
 package com.stopstone.whathelook.view.post
 
 import android.content.Intent
-import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.Spannable
-import android.text.style.ForegroundColorSpan
-import android.util.Log
+import android.provider.MediaStore
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import com.kakao.sdk.user.UserApiClient
+import com.google.android.material.snackbar.Snackbar
 import com.stopstone.whathelook.R
 import com.stopstone.whathelook.databinding.ActivityPostBinding
+import com.stopstone.whathelook.data.model.response.PostListItem
+import com.stopstone.whathelook.utils.KakaoUserUtil
+import com.stopstone.whathelook.view.custom.gallery.CustomGalleryActivity
 import com.stopstone.whathelook.view.post.adapter.PostImageAdapter
 import com.stopstone.whathelook.view.post.viewmodel.PostViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 
 @AndroidEntryPoint
 class PostActivity : AppCompatActivity() {
-    private val binding: ActivityPostBinding by lazy { ActivityPostBinding.inflate(layoutInflater) }
+    private lateinit var binding: ActivityPostBinding
     private val viewModel: PostViewModel by viewModels()
-    private val adapter: PostImageAdapter by lazy { PostImageAdapter { viewModel.removeImage(it) } }
-    private lateinit var imagePickerLauncher: ActivityResultLauncher<Intent>
+    private val adapter: PostImageAdapter by lazy { PostImageAdapter(this::onDeletePhoto) }
+    private var isEditMode = false
+    private var editPostId: Long = -1
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val selectedImages = result.data?.getParcelableArrayListExtra<Uri>(CustomGalleryActivity.SELECTED_IMAGES)
+            selectedImages?.forEach { uri ->
+                viewModel.addImage(uri)
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityPostBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupImagePickerLauncher()
-        setupViews()
-        observeViewModel()
-    }
+        isEditMode = intent.getBooleanExtra(EXTRA_IS_EDIT_MODE, false)
+        editPostId = intent.getLongExtra(EXTRA_POST_ID, -1)
 
-    private fun setupImagePickerLauncher() {
-        imagePickerLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    result.data?.let { intent ->
-                        val currentCount = viewModel.selectedImages.value.size
-                        val remainingSlots = MAX_IMAGES - currentCount
+        setupUI()
+        setupObservers()
 
-                        if (intent.clipData != null) {
-                            val count = minOf(intent.clipData!!.itemCount, remainingSlots)
-                            for (i in 0 until count) {
-                                val imageUri = intent.clipData!!.getItemAt(i).uri
-                                viewModel.addImage(imageUri)
-                            }
-                        } else {
-                            intent.data?.let { uri ->
-                                viewModel.addImage(uri)
-                            }
-                        }
-
-                        if (viewModel.selectedImages.value.size >= MAX_IMAGES) {
-                            Toast.makeText(
-                                this,
-                                "최대 $MAX_IMAGES 장의 이미지를 선택하셨습니다.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-            }
-    }
-
-    private fun setupViews() {
-        setupImageSelection()
-        setupRecyclerView()
-        setupTextInputs()
-        setupChipGroup()
-        setupSubmitButton()
-
-        binding.toolbarPost.setNavigationOnClickListener {
-            finish()
+        if (isEditMode) {
+            viewModel.getPostDetail(editPostId)
         }
+    }
 
-        // kakaoId 설정 (예: 로그인 시 저장된 ID)
-        UserApiClient.instance.me { user, error ->
-            if (error != null) {
-                Log.e("PostActivity", "사용자 정보 요청 실패", error)
-            } else if (user != null) {
-                viewModel.setKakaoId(user.id.toString())
+    private fun setupUI() {
+        binding.toolbarPost.title = if (isEditMode) "게시글 수정" else "게시글 작성"
+        binding.btnRegisterCompleteButton.text = if (isEditMode) "수정해요" else "작성해요"
+
+        binding.toolbarPost.setNavigationOnClickListener { finish() }
+        binding.ivPostItemAddImage.setOnClickListener { openGallery() }
+        binding.rvPostPhotoList.adapter = adapter
+        binding.btnRegisterCompleteButton.setOnClickListener {
+            if (isEditMode) {
+                viewModel.updatePost(editPostId)
+            } else {
+                viewModel.createPost()
             }
         }
-    }
 
-    private fun setupTextInputs() {
-        binding.etPostItemTitle.doAfterTextChanged {
-            viewModel.setPostTitle(it?.toString() ?: "")
-        }
+        binding.etPostItemTitle.addTextChangedListener { viewModel.setPostTitle(it.toString()) }
+        binding.etPostItemContent.addTextChangedListener { viewModel.setPostContent(it.toString()) }
 
-        binding.etPostItemContent.addTextChangedListener {
-            viewModel.setPostContent(it?.toString() ?: "")
-            highlightHashtags(it)
-        }
-    }
-
-    private fun setupChipGroup() {
-        binding.categoryChipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
-            val selectedChipId = checkedIds.firstOrNull()
-            val category = when (selectedChipId) {
-                R.id.chip_answer -> "정보공유"
+        binding.categoryChipGroup.setOnCheckedChangeListener { _, checkedId ->
+            val category = when (checkedId) {
                 R.id.chip_question -> "질문하기"
+                R.id.chip_answer -> "정보공유"
                 else -> ""
             }
             viewModel.setCategory(category)
-            viewModel.setChipSelected(checkedIds.isNotEmpty())
-        }
-    }
-
-    private fun setupSubmitButton() {
-        binding.btnRegisterCompleteButton.setOnClickListener {
-            viewModel.extractHashtags()
-            viewModel.createPost()
-        }
-    }
-
-    private fun setupRecyclerView() {
-        binding.rvPostPhotoList.adapter = adapter
-    }
-
-    private fun setupImageSelection() {
-        binding.ivPostItemAddImage.setOnClickListener {
-            if (viewModel.selectedImages.value.size < MAX_IMAGES) {
-                openImagePicker()
-            } else {
-                Toast.makeText(this, "이미 $MAX_IMAGES 장의 이미지를 선택하셨습니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun observeViewModel() {
-        lifecycleScope.launch {
-            viewModel.selectedImages.collect { images ->
-                adapter.submitList(images)
-            }
         }
 
         lifecycleScope.launch {
-            viewModel.isSubmitEnabled.collect { isEnabled ->
-                binding.btnRegisterCompleteButton.isEnabled = isEnabled
-            }
+            val kakaoId = KakaoUserUtil.getUserId().toString()
+            viewModel.setKakaoId(kakaoId)
         }
+    }
 
+    private fun setupObservers() {
         lifecycleScope.launch {
-            viewModel.hashtagList.collect { hashtags ->
-                Log.d("PostActivity", "해시태그: $hashtags")
+            launch {
+                viewModel.postDetail.collect { post ->
+                    post?.let { updateUIWithPostData(it) }
+                }
             }
-        }
 
-        lifecycleScope.launch {
-            viewModel.postCreationResult.collect { result ->
-                result.onSuccess { message ->
-                    Toast.makeText(this@PostActivity, "게시물이 성공적으로 생성되었습니다: $message", Toast.LENGTH_SHORT).show()
-                    finish()
-                }.onFailure { error ->
-                    val errorMessage = when (error) {
-                        is HttpException -> "HTTP 오류: ${error.code()}"
-                        is IOException -> "네트워크 오류: ${error.message}"
-                        else -> "오류: ${error.message}"
+            launch {
+                viewModel.postCreationResult.collect { result ->
+                    result.onSuccess {
+                        Toast.makeText(this@PostActivity, "게시글이 생성되었습니다.", Toast.LENGTH_SHORT).show()
+                        setResult(RESULT_OK)
+                        finish()
+                    }.onFailure { e ->
+                        Toast.makeText(this@PostActivity, "게시글 생성 실패: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
-                    Toast.makeText(this@PostActivity, "게시물 생성에 실패했습니다: $errorMessage", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            launch {
+                viewModel.postUpdateResult.collect { result ->
+                    result.onSuccess {
+                        Toast.makeText(this@PostActivity, "게시글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                        setResult(RESULT_OK)
+                        finish()
+                    }.onFailure { e ->
+                        Toast.makeText(this@PostActivity, "게시글 수정 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            launch {
+                viewModel.selectedImages.collect {
+                    adapter.submitList(it)
+                }
+            }
+
+            launch {
+                viewModel.isSubmitEnabled.collect {
+                    binding.btnRegisterCompleteButton.isEnabled = it
                 }
             }
         }
     }
 
-    private fun openImagePicker() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+    private fun updateUIWithPostData(post: PostListItem) {
+        binding.etPostItemTitle.setText(post.title)
+        binding.etPostItemContent.setText(post.content)
+        when (post.category) {
+            "질문하기" -> binding.chipQuestion.isChecked = true
+            "정보공유" -> binding.chipAnswer.isChecked = true
         }
-        imagePickerLauncher.launch(Intent.createChooser(intent, "이미지 선택"))
+        viewModel.setSelectedImages(post.photoUrls.map { Uri.parse(it) })
+        adapter.submitList(post.photoUrls.map { Uri.parse(it) })
+
+        // 카테고리 설정
+        viewModel.setCategory(post.category)
+        viewModel.setChipSelected(true)
     }
 
-    private fun highlightHashtags(s: Editable?) {
-        s?.let {
-            val spans = it.getSpans(0, it.length, ForegroundColorSpan::class.java)
-            for (span in spans) {
-                it.removeSpan(span)
-            }
+    private fun openGallery() {
+        val intent = Intent(this, CustomGalleryActivity::class.java)
+        galleryLauncher.launch(intent)
+    }
 
-            val words = it.split("\\s+".toRegex())
-            var lastIndex = 0
-            for (word in words) {
-                if (word.startsWith("#")) {
-                    val startIndex = it.indexOf(word, lastIndex)
-                    val endIndex = startIndex + word.length
-                    it.setSpan(
-                        ForegroundColorSpan(Color.BLUE),
-                        startIndex,
-                        endIndex,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                }
-                lastIndex += word.length + 1
-            }
-        }
+    private fun onDeletePhoto(uri: Uri) {
+        viewModel.removeImage(uri)
     }
 
     companion object {
-        private const val MAX_IMAGES = 5
+        const val EXTRA_IS_EDIT_MODE = "extra_is_edit_mode"
+        const val EXTRA_POST_ID = "extra_post_id"
+        const val MAX_IMAGES = 5
     }
 }

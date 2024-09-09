@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stopstone.whathelook.data.model.entity.CreatePostModel
+import com.stopstone.whathelook.data.model.response.PostListItem
+import com.stopstone.whathelook.domain.usecase.detail.GetPostDetailUseCase
 import com.stopstone.whathelook.domain.usecase.post.CreatePostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
-    private val createPostUseCase: CreatePostUseCase
+    private val createPostUseCase: CreatePostUseCase,
+    private val getPostDetailUseCase: GetPostDetailUseCase
 ) : ViewModel() {
 
     private val _createPostModelState = MutableStateFlow(CreatePostModel("", "", "", "", "", emptyList(), emptyList()))
@@ -49,11 +52,17 @@ class PostViewModel @Inject constructor(
     private val _postCreationResult = MutableSharedFlow<Result<String>>()
     val postCreationResult: SharedFlow<Result<String>> = _postCreationResult.asSharedFlow()
 
+    private val _postUpdateResult = MutableSharedFlow<Result<String>>()
+    val postUpdateResult: SharedFlow<Result<String>> = _postUpdateResult.asSharedFlow()
+
     private val _kakaoId = MutableStateFlow("")
     val kakaoId: StateFlow<String> = _kakaoId.asStateFlow()
 
     private val _category = MutableStateFlow("")
     val category: StateFlow<String> = _category.asStateFlow()
+
+    private val _postDetail = MutableStateFlow<PostListItem?>(null)
+    val postDetail: StateFlow<PostListItem?> = _postDetail.asStateFlow()
 
     fun setPostTitle(title: String) {
         _postTitle.value = title
@@ -68,6 +77,7 @@ class PostViewModel @Inject constructor(
 
     fun setCategory(category: String) {
         _category.value = category
+        _isChipSelected.value = category.isNotEmpty()
         updatePostState()
     }
 
@@ -99,7 +109,6 @@ class PostViewModel @Inject constructor(
 
         _hashtagList.value = hashtags
 
-        // Remove hashtags from content
         val contentWithoutHashtags = _rawContent.value.replace(hashtagRegex, "").trim()
         _postContent.value = contentWithoutHashtags
 
@@ -131,6 +140,37 @@ class PostViewModel @Inject constructor(
                 Log.e("PostViewModel", "게시글 생성 실패: ${e.message}")
             }
         }
+    }
+
+    fun updatePost(postId: Long) {
+        viewModelScope.launch {
+            Log.d("PostViewModel", "게시글 수정 시도: ${_createPostModelState.value}")
+            try {
+//                val result = updatePostUseCase(postId, _createPostModelState.value)
+//                _postUpdateResult.emit(result)
+                Log.d("PostViewModel", "게시글 수정 성공: ")
+            } catch (e: Exception) {
+                _postUpdateResult.emit(Result.failure(e))
+                Log.e("PostViewModel", "게시글 수정 실패: ${e.message}")
+            }
+        }
+    }
+
+    fun getPostDetail(postId: Long) {
+        viewModelScope.launch {
+            try {
+                val post = getPostDetailUseCase(postId)
+                _postDetail.value = post
+                Log.d("PostViewModel", "게시글 상세 정보 조회 성공: $post")
+            } catch (e: Exception) {
+                Log.e("PostViewModel", "게시글 상세 정보 조회 실패: ${e.message}")
+            }
+        }
+    }
+
+    fun setSelectedImages(images: List<Uri>) {
+        _selectedImages.value = images
+        updatePostState()
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.stopstone.whathelook.view.detail
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -28,6 +29,7 @@ import com.stopstone.whathelook.utils.setRelativeTimeText
 import com.stopstone.whathelook.view.detail.adapter.CommentAdapter
 import com.stopstone.whathelook.view.detail.adapter.OnCommentClickListener
 import com.stopstone.whathelook.view.detail.viewmodel.DetailViewModel
+import com.stopstone.whathelook.view.post.PostActivity
 import com.stopstone.whathelook.view.post.adapter.PostListItemImageAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -35,9 +37,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     private val binding: ActivityPostDetailBinding by lazy {
-        ActivityPostDetailBinding.inflate(
-            layoutInflater
-        )
+        ActivityPostDetailBinding.inflate(layoutInflater)
     }
     private val adapter: PostListItemImageAdapter by lazy { PostListItemImageAdapter() }
     private val commentAdapter: CommentAdapter by lazy { CommentAdapter(this) }
@@ -92,14 +92,13 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 }
             }
 
-            lifecycleScope.launch {
+            launch {
                 viewModel.event.collect { event ->
                     when (event) {
                         is DetailEvent.FinishActivity -> finish()
                     }
                 }
             }
-
         }
 
         binding.btnPostLike.setOnClickListener {
@@ -139,7 +138,6 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                     postListItem.hashtags
                 )
 
-                // 해시태그 목록 표시
                 val hashtagContent = postListItem.hashtags.joinToString(" ")
                 tvPostHashtags.text = hashtagContent
                 HashtagUtils.setClickableHashtags(
@@ -156,26 +154,24 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         menuInflater.inflate(R.menu.item_post_menu, menu)
 
         val deleteItem = menu.findItem(R.id.action_delete)
+        val updateItem = menu.findItem(R.id.action_update)
         val postListItem = viewModel.postDetail.value
 
-        // currentUserId나 postListItem이 null이면 삭제 메뉴를 숨깁니다.
         if (currentUserId == null || postListItem == null) {
             deleteItem.isVisible = false
+            updateItem.isVisible = false
             return true
         }
 
-        // 현재 사용자가 게시물 작성자인 경우에만 삭제 메뉴를 표시
-        deleteItem.isVisible = (currentUserId == postListItem.author.kakaoId.toLong())
+        val isAuthor = (currentUserId == postListItem.author.kakaoId.toLong())
+        deleteItem.isVisible = isAuthor
+        updateItem.isVisible = isAuthor
 
-        if (deleteItem.isVisible) {
-            val spanString = SpannableString(deleteItem.title.toString())
-            spanString.setSpan(
-                ForegroundColorSpan(ContextCompat.getColor(this, R.color.red_700)),
-                0,
-                spanString.length,
-                0
-            )
-            deleteItem.title = spanString
+        if (isAuthor) {
+            val redColor = ContextCompat.getColor(this, R.color.red_700)
+            deleteItem.title = SpannableString(deleteItem.title).apply {
+                setSpan(ForegroundColorSpan(redColor), 0, length, 0)
+            }
         }
 
         return true
@@ -200,28 +196,44 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 true
             }
 
+            R.id.action_update -> {
+                val postListItem = viewModel.postDetail.value
+                postListItem?.let {
+                    if (currentUserId == it.author.kakaoId.toLong()) {
+                        val intent = Intent(this, PostActivity::class.java).apply {
+                            putExtra(PostActivity.EXTRA_IS_EDIT_MODE, true)
+                            putExtra(PostActivity.EXTRA_POST_ID, it.id)
+                        }
+                        startActivityForResult(intent, REQUEST_CODE_EDIT_POST)
+                    } else {
+                        Toast.makeText(this, "수정 권한이 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onMenuClick(comment: Comment, view: View) {
         val popup = PopupMenu(this, view)
-        if (currentUserId != comment.author.kakaoId.toLong()) {
-            popup.inflate(R.menu.item_comment_menu)
-        }
 
-        val deleteItem = popup.menu.findItem(R.id.action_comment_delete)
-        deleteItem?.let {
-            val spanString = SpannableString(deleteItem.title.toString())
-            spanString.setSpan(
-                ForegroundColorSpan(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.red_700
-                    )
-                ), 0, spanString.length, 0
-            )
-            deleteItem.title = spanString
+        if (currentUserId == comment.author.kakaoId.toLong()) {
+            popup.inflate(R.menu.item_comment_menu)
+            val deleteItem = popup.menu.findItem(R.id.action_comment_delete)
+            deleteItem?.let {
+                val spanString = SpannableString(deleteItem.title.toString())
+                spanString.setSpan(
+                    ForegroundColorSpan(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.red_700
+                        )
+                    ), 0, spanString.length, 0
+                )
+                deleteItem.title = spanString
+            }
         }
 
         popup.setOnMenuItemClickListener { menuItem ->
@@ -233,6 +245,7 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
 
                 R.id.action_comment_update -> {
                     currentEditingCommentId = comment.id
+                    binding.etPostCommentEdit.setText(comment.text)
                     binding.etPostCommentEdit.requestFocus()
                     showKeyboard()
                     true
@@ -249,7 +262,7 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         lifecycleScope.launch {
             try {
                 currentUserId = KakaoUserUtil.getUserId()
-                invalidateOptionsMenu() // 메뉴를 다시 생성
+                invalidateOptionsMenu()
             } catch (e: Exception) {
                 Log.e("PostDetailActivity", "Failed to fetch current user ID", e)
             }
@@ -268,5 +281,17 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     private fun hideKeyboard() {
         val imm = getSystemService<InputMethodManager>()
         imm?.hideSoftInputFromWindow(binding.etPostCommentEdit.windowToken, 0)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_EDIT_POST && resultCode == RESULT_OK) {
+            viewModel.getPostDetail(viewModel.postDetail.value?.id ?: return)
+            Toast.makeText(this, "게시글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    companion object {
+        private const val REQUEST_CODE_EDIT_POST = 1001
     }
 }
