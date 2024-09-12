@@ -5,9 +5,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stopstone.whathelook.data.model.entity.CreatePostModel
+import com.stopstone.whathelook.data.model.entity.UpdatePostModel
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.domain.usecase.detail.GetPostDetailUseCase
 import com.stopstone.whathelook.domain.usecase.post.CreatePostUseCase
+import com.stopstone.whathelook.domain.usecase.post.UpdatePostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PostViewModel @Inject constructor(
     private val createPostUseCase: CreatePostUseCase,
-    private val getPostDetailUseCase: GetPostDetailUseCase
+    private val getPostDetailUseCase: GetPostDetailUseCase,
+    private val updatePostUseCase: UpdatePostUseCase,
 ) : ViewModel() {
 
     private val _createPostModelState = MutableStateFlow(CreatePostModel("", "", "", "", "", emptyList(), emptyList()))
@@ -52,8 +55,8 @@ class PostViewModel @Inject constructor(
     private val _postCreationResult = MutableSharedFlow<Result<String>>()
     val postCreationResult: SharedFlow<Result<String>> = _postCreationResult.asSharedFlow()
 
-    private val _postUpdateResult = MutableSharedFlow<Result<String>>()
-    val postUpdateResult: SharedFlow<Result<String>> = _postUpdateResult.asSharedFlow()
+    private val _postUpdateResult = MutableSharedFlow<String>()
+    val postUpdateResult: SharedFlow<String> = _postUpdateResult.asSharedFlow()
 
     private val _kakaoId = MutableStateFlow("")
     val kakaoId: StateFlow<String> = _kakaoId.asStateFlow()
@@ -146,11 +149,20 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d("PostViewModel", "게시글 수정 시도: ${_createPostModelState.value}")
             try {
-//                val result = updatePostUseCase(postId, _createPostModelState.value)
-//                _postUpdateResult.emit(result)
+                val updatePostModel = UpdatePostModel(
+                    id = postId,
+                    author = _kakaoId.value,
+                    title = _postTitle.value,
+                    content = _postContent.value,
+                    category = _category.value,
+                    hashtags = _hashtagList.value,
+                    imageUris = _selectedImages.value
+                )
+                val result = updatePostUseCase(updatePostModel)
+                _postUpdateResult.emit(result)
                 Log.d("PostViewModel", "게시글 수정 성공: ")
             } catch (e: Exception) {
-                _postUpdateResult.emit(Result.failure(e))
+                _postUpdateResult.emit("게시글 수정 실패: ${e.message}")
                 Log.e("PostViewModel", "게시글 수정 실패: ${e.message}")
             }
         }

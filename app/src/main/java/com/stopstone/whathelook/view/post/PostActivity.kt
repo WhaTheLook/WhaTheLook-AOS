@@ -110,13 +110,14 @@ class PostActivity : AppCompatActivity() {
 
             launch {
                 viewModel.postUpdateResult.collect { result ->
-                    result.onSuccess {
-                        Toast.makeText(this@PostActivity, "게시글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
-                        setResult(RESULT_OK)
-                        finish()
-                    }.onFailure { e ->
-                        Toast.makeText(this@PostActivity, "게시글 수정 실패: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                    runCatching { result }
+                        .onSuccess {
+                            Toast.makeText(this@PostActivity, "게시글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+                            setResult(RESULT_OK)
+                            finish()
+                        }.onFailure {
+                            Toast.makeText(this@PostActivity, "게시글 수정 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                        }
                 }
             }
 
@@ -161,6 +162,5 @@ class PostActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_IS_EDIT_MODE = "extra_is_edit_mode"
         const val EXTRA_POST_ID = "extra_post_id"
-        const val MAX_IMAGES = 5
     }
 }

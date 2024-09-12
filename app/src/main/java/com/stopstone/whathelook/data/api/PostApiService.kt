@@ -26,12 +26,12 @@ interface PostApiService {
     @POST("/post/create")
     suspend fun createPost(
         @Part("postRequest") postRequest: RequestBody,
-        @Part photos: List<MultipartBody.Part>
+        @Part photos: List<MultipartBody.Part>,
     ): String
 
     @POST("/post/comment/create")
     suspend fun createComment(
-        @Body requestComment: RequestComment
+        @Body requestComment: RequestComment,
     ): CommentResponse
 
     @GET("/post/postList")
@@ -39,7 +39,7 @@ interface PostApiService {
         @Query("lastPostId") lastPostId: Long? = null,
         @Query("category") category: String,
         @Query("size") size: Int = 10,
-        @Query("sort") sort: String = "recent"
+        @Query("sort") sort: String = "recent",
     ): PostListResponse
 
     @GET("/post/postList/{search}")
@@ -48,34 +48,42 @@ interface PostApiService {
         @Query("lastPostId") lastPostId: Long? = null,
         @Query("size") size: Int = 10,
         @Query("sortBy") sortBy: String = "recent",
-        @Query("category") category: String? = null
+        @Query("category") category: String? = null,
     ): SearchResponse
 
     @GET("/post/{postId}")
     suspend fun getPostDetail(
-        @Path("postId") postId: Long
+        @Path("postId") postId: Long,
     ): PostListItem
 
 
     @POST("/post/like")
     suspend fun updateLike(
-        @Body requestLike: UpdateLikeRequest
+        @Body requestLike: UpdateLikeRequest,
     ): UpdateLikeResponse
 
     @PUT("/post/{commentId}/update")
     suspend fun updateComment(
         @Path("commentId") commentId: Long,
-        @Body requestComment: RequestUpdateComment
+        @Body requestComment: RequestUpdateComment,
     ): String
+
+    @Multipart
+    @PUT("/post/update")
+    suspend fun updatePost(
+        @Part("postUpdateRequest") postRequest: RequestBody, // @Body 대신 @Part 사용
+        @Part photos: List<MultipartBody.Part>
+    ): String
+
 
     @DELETE("/post/delete/{postId}")
     suspend fun deletePost(
-        @Path("postId") postId: Long
+        @Path("postId") postId: Long,
     ): String
 
     @DELETE("/post/{commentId}/delete")
     suspend fun deleteComment(
-        @Path("commentId") commentId: Long
+        @Path("commentId") commentId: Long,
     ): String
 
 }
