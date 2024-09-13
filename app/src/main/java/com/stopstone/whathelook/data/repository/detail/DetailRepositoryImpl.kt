@@ -4,6 +4,7 @@ import android.util.Log
 import com.stopstone.whathelook.data.api.PostApiService
 import com.stopstone.whathelook.data.model.request.RequestComment
 import com.stopstone.whathelook.data.model.request.RequestUpdateComment
+import com.stopstone.whathelook.data.model.response.ChildCommentsResponse
 import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
 import com.stopstone.whathelook.data.model.response.PostListItem
@@ -47,5 +48,14 @@ class DetailRepositoryImpl @Inject constructor(
             text = text
         )
         return postApiService.updateComment(commentId, request)
+    }
+
+    override suspend fun getChildComments(
+        postId: Long,
+        parentId: Long,
+        lastCommentId: Long?,
+        size: Int
+    ): ChildCommentsResponse {
+        return postApiService.getChildComments(postId, parentId, lastCommentId, size)
     }
 }

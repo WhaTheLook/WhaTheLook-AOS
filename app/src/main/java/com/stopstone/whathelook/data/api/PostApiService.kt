@@ -3,6 +3,7 @@ package com.stopstone.whathelook.data.api
 import com.stopstone.whathelook.data.model.request.RequestComment
 import com.stopstone.whathelook.data.model.request.RequestUpdateComment
 import com.stopstone.whathelook.data.model.request.UpdateLikeRequest
+import com.stopstone.whathelook.data.model.response.ChildCommentsResponse
 import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
 import com.stopstone.whathelook.data.model.response.PostListItem
@@ -55,6 +56,14 @@ interface PostApiService {
     suspend fun getPostDetail(
         @Path("postId") postId: Long,
     ): PostListItem
+
+    @GET("/post/{postId}/{parentId}/comment")
+    suspend fun getChildComments(
+        @Path("postId") postId: Long,
+        @Path("parentId") parentId: Long,
+        @Query("lastCommentId") lastCommentId: Long? = null,
+        @Query("size") size: Int = 10
+    ): ChildCommentsResponse
 
 
     @POST("/post/like")

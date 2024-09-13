@@ -10,6 +10,7 @@ import com.stopstone.whathelook.domain.event.DetailEvent
 import com.stopstone.whathelook.domain.usecase.common.DeletePostUseCase
 import com.stopstone.whathelook.domain.usecase.detail.CreateCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.DeleteCommentUseCase
+import com.stopstone.whathelook.domain.usecase.detail.GetChildCommentsUseCase
 import com.stopstone.whathelook.domain.usecase.detail.GetPostDetailUseCase
 import com.stopstone.whathelook.domain.usecase.detail.UpdateCommentUseCase
 import com.stopstone.whathelook.domain.usecase.post.UpdateLikeStateUseCase
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +32,7 @@ class DetailViewModel @Inject constructor(
     private val updateCommentUseCase: UpdateCommentUseCase,
     private val deleteCommentUseCase: DeleteCommentUseCase,
     private val deletePostUseCase: DeletePostUseCase,
+    private val getChildCommentsUseCase: GetChildCommentsUseCase,
 ) : ViewModel() {
     private val _postDetail = MutableStateFlow<PostListItem?>(null)
     val postDetail = _postDetail.asStateFlow()
@@ -45,6 +48,10 @@ class DetailViewModel @Inject constructor(
 
     private val _parentComment = MutableStateFlow<Comment?>(null)
     val parentComment = _parentComment.asStateFlow()
+
+    private val _childComments = MutableStateFlow<Map<Long, List<Comment>>>(emptyMap())
+    val childComments = _childComments.asStateFlow()
+
 
     fun setReplyTarget(comment: Comment?) {
         _parentComment.value = comment
@@ -193,6 +200,21 @@ class DetailViewModel @Inject constructor(
                 sendMessage.emit("댓글을 삭제했습니다.")
             }.onFailure {
                 Log.e("DetailViewModel", "댓글 삭제 실패: $it")
+            }
+        }
+    }
+
+    fun getChildComments(postId: Long, parentId: Long, lastCommentId: Long? = null, size: Int = 10) {
+        viewModelScope.launch {
+            try {
+                val response = getChildCommentsUseCase(postId, parentId, lastCommentId, size)
+                _childComments.update { currentMap ->
+                    val currentList = currentMap[parentId] ?: emptyList()
+                    currentMap + (parentId to (currentList + response.content))
+                }
+                Log.d("DetailViewModel", "Child comments loaded for parent $parentId: ${response.content.size} comments, hasNext=${!response.last}")
+            } catch (e: Exception) {
+                Log.e("DetailViewModel", "Error loading child comments", e)
             }
         }
     }

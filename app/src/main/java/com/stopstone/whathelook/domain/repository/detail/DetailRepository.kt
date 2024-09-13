@@ -1,5 +1,6 @@
 package com.stopstone.whathelook.domain.repository.detail
 
+import com.stopstone.whathelook.data.model.response.ChildCommentsResponse
 import com.stopstone.whathelook.data.model.response.CommentResponse
 import com.stopstone.whathelook.data.model.response.PostDetailResponse
 import com.stopstone.whathelook.data.model.response.PostListItem
@@ -16,4 +17,10 @@ interface DetailRepository {
     ): CommentResponse
     suspend fun deleteComment(commentId: Long): String
     suspend fun updateComment(commentId: Long, text: String): String
+    suspend fun getChildComments(
+        postId: Long,
+        parentId: Long,
+        lastCommentId: Long?,
+        size: Int
+    ): ChildCommentsResponse
 }

@@ -9,6 +9,7 @@ import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.databinding.ItemPostCommentBinding
 import com.stopstone.whathelook.utils.loadCircleImage
 import com.stopstone.whathelook.utils.setRelativeTimeText
+import com.stopstone.whathelook.view.post.adapter.PostListItemImageAdapter
 
 class CommentAdapter(private val listener: OnCommentClickListener) :
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
@@ -42,6 +43,15 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
         private val listener: OnCommentClickListener
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        private val childCommentAdapter = CommentAdapter(listener)
+
+        init {
+            binding.rvChildComments.apply {
+                adapter = childCommentAdapter
+                visibility = View.GONE
+            }
+        }
+
         fun bind(comment: Comment) {
             binding.apply {
                 tvUserName.text = comment.author.name
@@ -57,14 +67,28 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
                     listener.onReplyClick(comment)
                 }
 
-                // 대댓글 보기 기능 추가 (옵션)
                 if (comment.children.isNotEmpty()) {
                     tvPostCommentReplyVisible.visibility = View.VISIBLE
+                    tvPostCommentReplyVisible.text = "${comment.children.size}개의 답글 보기"
                     tvPostCommentReplyVisible.setOnClickListener {
                         listener.onShowRepliesClick(comment)
+                        toggleChildComments(comment)
                     }
                 } else {
                     tvPostCommentReplyVisible.visibility = View.GONE
+                }
+            }
+        }
+
+        private fun toggleChildComments(comment: Comment) {
+            binding.apply {
+                if (rvChildComments.visibility == View.VISIBLE) {
+                    rvChildComments.visibility = View.GONE
+                    tvPostCommentReplyVisible.text = "${comment.children.size}개의 답글 보기"
+                } else {
+                    rvChildComments.visibility = View.VISIBLE
+                    childCommentAdapter.submitList(comment.children)
+                    tvPostCommentReplyVisible.text = "답글 숨기기"
                 }
             }
         }
@@ -74,5 +98,5 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
 interface OnCommentClickListener {
     fun onMenuClick(comment: Comment, view: View)
     fun onReplyClick(comment: Comment)
-    fun onShowRepliesClick(comment: Comment) // 대댓글 보기 기능 (옵션)
+    fun onShowRepliesClick(comment: Comment)
 }

@@ -29,7 +29,6 @@
         app:layout_constraintTop_toTopOf="@id/iv_user_profile"
         tools:text="Username" />
 
-
     <TextView
         android:id="@+id/tv_post_comment_timestamp"
         android:layout_width="wrap_content"
@@ -54,7 +53,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_user_name" />
 
-
     <TextView
         android:id="@+id/tv_post_comment_content"
         android:layout_width="0dp"
@@ -72,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="답글달기"
-        android:textSize="12dp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@id/tv_post_comment_content"
         app:layout_constraintTop_toBottomOf="@id/tv_post_comment_content" />
 
@@ -80,10 +78,24 @@
         android:id="@+id/tv_post_comment_reply_visible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="0개의 답글 보기"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_post_comment_reply"
+        app:layout_constraintStart_toEndOf="@id/tv_post_comment_reply"
+        app:layout_constraintTop_toTopOf="@+id/tv_post_comment_reply" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_child_comments"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="-------------- 답글 보기"
-        android:textSize="12dp"
-        app:layout_constraintStart_toStartOf="@id/tv_post_comment_reply"
-        app:layout_constraintTop_toBottomOf="@id/tv_post_comment_reply" />
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+        app:layout_constraintTop_toBottomOf="@id/tv_post_comment_reply"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_post_comment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

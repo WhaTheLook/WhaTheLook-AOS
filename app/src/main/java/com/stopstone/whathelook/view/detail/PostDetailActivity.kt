@@ -50,6 +50,7 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
 
     private var isUpdatingText = false
     private var replyPrefix: String = ""
+    private var originalReplyPrefix = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -264,22 +265,23 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         showReplyUI(comment)
     }
 
+
     override fun onShowRepliesClick(comment: Comment) {
-        // 대댓글 보기 기능 구현
         Log.d("PostDetailActivity", "대댓글 보기 클릭: 댓글 ID=${comment.id}")
+        val postId = viewModel.postDetail.value?.id ?: return
+        viewModel.getChildComments(postId, comment.id)
     }
 
     private fun updateReplyPrefixSpan(fullText: String) {
-        if (isUpdatingText) return
-
-        isUpdatingText = true
         val spannableString = SpannableString(fullText)
+        val prefixEnd = fullText.indexOf(' ').takeIf { it != -1 } ?: fullText.length
         spannableString.setSpan(
             ForegroundColorSpan(ContextCompat.getColor(this, R.color.gray_500)),
             0,
-            replyPrefix.length,
+            prefixEnd,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+        isUpdatingText = true
         binding.etPostCommentEdit.setText(spannableString)
         binding.etPostCommentEdit.setSelection(fullText.length)
         isUpdatingText = false
@@ -293,13 +295,16 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 if (isUpdatingText) return
 
                 val currentText = s?.toString() ?: ""
-                if (replyPrefix.isNotEmpty() && !currentText.startsWith(replyPrefix)) {
-                    // 사용자가 replyPrefix를 변경하려고 시도
+                if (originalReplyPrefix.isNotEmpty() && currentText.startsWith("@") &&
+                    currentText != originalReplyPrefix && currentText.length <= originalReplyPrefix.length) {
+                    // "@닉네임"이 부분적으로 수정되었다면 전체 제거
                     isUpdatingText = true
-                    binding.etPostCommentEdit.setText(replyPrefix + currentText)
-                    binding.etPostCommentEdit.setSelection((replyPrefix + currentText).length)
+                    binding.etPostCommentEdit.setText("")
+                    binding.etPostCommentEdit.setSelection(0)
                     isUpdatingText = false
-                } else {
+                    originalReplyPrefix = ""
+                    viewModel.setReplyTarget(null)
+                } else if (currentText.startsWith("@")) {
                     updateReplyPrefixSpan(currentText)
                 }
             }
@@ -308,19 +313,20 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
 
     private fun showReplyUI(comment: Comment) {
         viewModel.setReplyTarget(comment)
-        replyPrefix = "@${comment.author.name} "
+        originalReplyPrefix = "@${comment.author.name} "
 
         isUpdatingText = true
-        binding.etPostCommentEdit.setText(replyPrefix)
-        binding.etPostCommentEdit.setSelection(replyPrefix.length)
+        binding.etPostCommentEdit.setText(originalReplyPrefix)
+        binding.etPostCommentEdit.setSelection(originalReplyPrefix.length)
         isUpdatingText = false
 
-        updateReplyPrefixSpan(replyPrefix)
+        updateReplyPrefixSpan(originalReplyPrefix)
         binding.etPostCommentEdit.requestFocus()
         showKeyboard()
 
         Log.d("PostDetailActivity", "답글 UI 설정: 대상 사용자 ID=${comment.author.kakaoId}, 이름=${comment.author.name}, 부모 댓글 ID=${comment.id}")
     }
+
 
     private fun fetchCurrentUserId() {
         lifecycleScope.launch {
