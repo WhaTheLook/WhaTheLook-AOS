@@ -137,7 +137,6 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 tvPostLikeCount.text = "$likeCount"
                 btnPostLike.isSelected = likeYN
                 tvPostCommentCount.text = "$commentCount"
-                tvPostDetailCommentCount.text = "$commentCount"
 
                 HashtagUtils.setClickableHashtags(
                     this@PostDetailActivity,

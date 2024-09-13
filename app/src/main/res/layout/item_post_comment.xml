@@ -7,7 +7,6 @@
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:paddingHorizontal="16dp"
     android:paddingVertical="12dp">
 
     <ImageView
@@ -90,10 +89,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintStart_toStartOf="@id/iv_user_profile"
+        app:layout_constraintStart_toEndOf="@id/tv_post_comment_reply"
         app:layout_constraintTop_toBottomOf="@id/tv_post_comment_reply"
         tools:itemCount="2"
         tools:listitem="@layout/item_post_comment" />
