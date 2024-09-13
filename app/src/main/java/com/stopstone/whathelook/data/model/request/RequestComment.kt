@@ -5,4 +5,5 @@ data class RequestComment(
     val userId: Long,
     val parentId: Long? = null,
     val text: String,
+    val targetId: Long? = null
 )

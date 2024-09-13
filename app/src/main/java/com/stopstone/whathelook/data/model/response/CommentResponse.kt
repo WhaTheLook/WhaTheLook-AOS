@@ -5,6 +5,7 @@ data class CommentResponse(
     val author: Author,
     val text: String,
     val date: String,
-    val depth: Int,
-    val replyComment: List<Comment>
+    val accept: Boolean,
+    val children: List<Comment> = emptyList(),
+    val targetUser: Author? = null
 )

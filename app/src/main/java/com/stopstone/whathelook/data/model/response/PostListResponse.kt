@@ -46,9 +46,10 @@ data class Comment(
     val author: Author,
     val text: String,
     val date: String,
-    val depth: Int,
-    val replyComment: List<Comment>? = null
-): Parcelable
+    val accept: Boolean = false,
+    val children: List<Comment> = emptyList(),
+    val targetUser: Author? = null
+) : Parcelable
 
 data class Sort(
     val empty: Boolean,

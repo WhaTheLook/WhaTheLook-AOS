@@ -11,7 +11,8 @@ interface DetailRepository {
         postId: Long,
         userId: Long,
         parentId: Long?,
-        text: String
+        text: String,
+        targetId: Long?
     ): CommentResponse
     suspend fun deleteComment(commentId: Long): String
     suspend fun updateComment(commentId: Long, text: String): String

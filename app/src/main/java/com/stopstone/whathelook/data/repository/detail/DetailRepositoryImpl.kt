@@ -22,12 +22,15 @@ class DetailRepositoryImpl @Inject constructor(
         postId: Long,
         userId: Long,
         parentId: Long?,
-        text: String
+        text: String,
+        targetId: Long?
     ): CommentResponse {
         val requestComment = RequestComment(
             postId = postId,
             userId = userId,
-            text = text
+            text = text,
+            parentId = parentId,
+            targetId = targetId
         )
         val response = postApiService.createComment(requestComment)
         Log.d("DetailRepositoryImpl", "createComment: $response")

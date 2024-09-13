@@ -3,6 +3,7 @@ package com.stopstone.whathelook.view.detail.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.stopstone.whathelook.data.model.response.Author
 import com.stopstone.whathelook.data.model.response.Comment
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.domain.event.DetailEvent
@@ -42,6 +43,14 @@ class DetailViewModel @Inject constructor(
     private val _event = MutableSharedFlow<DetailEvent>()
     val event = _event.asSharedFlow()
 
+    private val _parentComment = MutableStateFlow<Comment?>(null)
+    val parentComment = _parentComment.asStateFlow()
+
+    fun setReplyTarget(comment: Comment?) {
+        _parentComment.value = comment
+        Log.d("DetailViewModel", "답글 대상 설정: 이름=${comment?.author?.name ?: "없음"}, ID=${comment?.author?.kakaoId ?: "없음"}, 부모 댓글 ID=${comment?.id ?: "없음"}")
+    }
+
     fun getPostDetail(postId: Long) {
         viewModelScope.launch {
             runCatching {
@@ -49,42 +58,98 @@ class DetailViewModel @Inject constructor(
             }.onSuccess { response ->
                 _postDetail.value = response
                 _comments.value = response.comments ?: emptyList()
-                Log.d("DetailViewModel", "getPostDetail: $response")
-                Log.d("DetailViewModel", "Comments: ${_comments.value}")
-                Log.d("DetailViewModel", "Comment count: ${_comments.value.size}")
+                Log.d("DetailViewModel", "게시물 상세 정보 조회 성공: $response")
+                Log.d("DetailViewModel", "댓글 목록: ${_comments.value}")
+                Log.d("DetailViewModel", "댓글 수: ${_comments.value.size}")
                 _comments.value.forEachIndexed { index, comment ->
-                    Log.d("DetailViewModel", "Comment $index: $comment")
-                    Log.d("DetailViewModel", "Comment $index author: ${comment.author}")
+                    Log.d("DetailViewModel", "댓글 $index: $comment")
+                    Log.d("DetailViewModel", "댓글 $index 작성자: ${comment.author}")
                 }
             }.onFailure {
-                Log.e("DetailViewModel", "getPostDetail: $it")
+                Log.e("DetailViewModel", "게시물 상세 정보 조회 실패: $it")
             }
         }
     }
 
-    private fun createComment(postId: Long, userId: Long, parentId: Long?, comment: String) {
+    fun createOrUpdateComment(postId: Long, commentId: Long?, comment: String) {
         viewModelScope.launch {
-            val userId = getUserId()!!
+            val userId = getUserId() ?: return@launch
+
+            val parentComment = _parentComment.value
+            val isReply = parentComment != null
+            val parentId = parentComment?.id
+            val targetId = parentComment?.author?.kakaoId
+
+            val commentText = if (isReply && comment.startsWith("@")) {
+                comment.substringAfter(" ").trim()
+            } else {
+                comment
+            }
+
+            Log.d("DetailViewModel", "댓글 생성 시도: 대댓글여부=$isReply, 부모댓글ID=$parentId, 대상사용자ID=$targetId, 댓글내용=$commentText, 답글대상=${parentComment?.author?.name}")
+
+            if (commentId == null) {
+                createComment(postId, userId, parentId, commentText, targetId, isReply)
+            } else {
+                updateComment(commentId, commentText)
+            }
+
+            // 댓글 작성/수정 후 처리
+            _parentComment.value = null
+        }
+    }
+
+    private fun createComment(postId: Long, userId: Long, parentId: Long?, comment: String, targetId: String?, isReply: Boolean) {
+        viewModelScope.launch {
             runCatching {
-                createCommentUseCase(postId, userId, parentId, comment)
+                createCommentUseCase(postId, userId, parentId, comment, targetId?.toLong())
             }.onSuccess { response ->
                 val newComment = Comment(
                     id = response.id,
                     author = response.author,
                     text = response.text,
                     date = response.date,
-                    depth = response.depth,
+                    accept = response.accept,
+                    children = response.children,
+                    targetUser = response.targetUser
                 )
-                _comments.value = listOf(newComment) + _comments.value // 새 댓글을 리스트의 맨 앞에 추가
-                _postDetail.value =
-                    _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.plus(1)!!)
-                sendMessage.emit("댓글을 생성했습니다.")
+                updateCommentsList(newComment, parentId)
+                if (isReply) {
+                    Log.d("DetailViewModel", "답글 입력 성공. 답글 ID: ${response.id}, 부모 댓글 ID: $parentId, 대상 사용자 ID: $targetId")
+                    sendMessage.emit("답글이 입력되었습니다.")
+                } else {
+                    Log.d("DetailViewModel", "댓글 입력 성공. 댓글 ID: ${response.id}")
+                    sendMessage.emit("댓글이 입력되었습니다.")
+                }
             }.onFailure {
-                Log.e("DetailViewModel", "createComment: $it")
+                Log.e("DetailViewModel", "댓글 생성 실패: ${it.message}")
+                sendMessage.emit("댓글 생성에 실패했습니다.")
             }
         }
     }
 
+    private fun updateCommentsList(newComment: Comment, parentId: Long?) {
+        _comments.value = _comments.value.let { currentComments ->
+            if (parentId == null) {
+                Log.d("DetailViewModel", "일반 댓글 추가: ${newComment.id}")
+                listOf(newComment) + currentComments
+            } else {
+                Log.d("DetailViewModel", "대댓글 추가: ${newComment.id}, 부모 댓글 ID: $parentId")
+                currentComments.map { comment ->
+                    if (comment.id == parentId) {
+                        comment.copy(children = comment.children + newComment)
+                    } else {
+                        comment
+                    }
+                }
+            }
+        }
+
+        _postDetail.value = _postDetail.value?.copy(
+            commentCount = (_postDetail.value?.commentCount ?: 0) + 1
+        )
+        Log.d("DetailViewModel", "댓글 목록 업데이트 완료. 총 댓글 수: ${_postDetail.value?.commentCount}")
+    }
 
     private fun updateComment(commentId: Long, newText: String) {
         viewModelScope.launch {
@@ -95,21 +160,11 @@ class DetailViewModel @Inject constructor(
                     if (comment.id == commentId) comment.copy(text = newText) else comment
                 }
                 _comments.value = updatedComments
+                Log.d("DetailViewModel", "댓글 수정 성공. 댓글 ID: $commentId, 새로운 내용: $newText")
                 sendMessage.emit("댓글을 수정했습니다.")
             }.onFailure {
-                Log.e("DetailViewModel", "updateComment: $it")
+                Log.e("DetailViewModel", "댓글 수정 실패: $it")
                 sendMessage.emit("댓글 수정에 실패했습니다.")
-            }
-        }
-    }
-
-    fun createOrUpdateComment(postId: Long, commentId: Long?, comment: String) {
-        viewModelScope.launch {
-            val userId = getUserId()!!
-            if (commentId == null) {
-                createComment(postId, userId, null, comment)
-            } else {
-                updateComment(commentId, comment)
             }
         }
     }
@@ -118,12 +173,12 @@ class DetailViewModel @Inject constructor(
         val userId = getUserId()
         runCatching {
             val likeState = updateLikeStateUseCase(postItem, userId!!)
-            _postDetail.value =
-                _postDetail.value?.copy(likeYN = likeState.likeYN, likeCount = likeState.likeCount)
+            _postDetail.value = _postDetail.value?.copy(likeYN = likeState.likeYN, likeCount = likeState.likeCount)
+            Log.d("DetailViewModel", "좋아요 상태 변경: 게시물 ID=${postItem.id}, 좋아요=${likeState.likeYN}, 좋아요 수=${likeState.likeCount}")
         }.onSuccess {
-            Log.d("HomeViewModel", "좋아요 상태 변경 성공")
+            Log.d("DetailViewModel", "좋아요 상태 변경 성공")
         }.onFailure { e ->
-            Log.e("HomeViewModel", "좋아요 상태 변경 성공 실패", e)
+            Log.e("DetailViewModel", "좋아요 상태 변경 실패", e)
         }
     }
 
@@ -132,11 +187,12 @@ class DetailViewModel @Inject constructor(
             runCatching {
                 deleteCommentUseCase(commentId)
             }.onSuccess {
-                _comments.value = _comments.value.filter { it.id != commentId } // 댓글 목록 업데이트
+                _comments.value = _comments.value.filter { it.id != commentId }
                 _postDetail.value = _postDetail.value?.copy(commentCount = _postDetail.value?.commentCount?.minus(1)!!)
+                Log.d("DetailViewModel", "댓글 삭제 성공. 댓글 ID: $commentId, 남은 댓글 수: ${_postDetail.value?.commentCount}")
                 sendMessage.emit("댓글을 삭제했습니다.")
             }.onFailure {
-                Log.e("DetailViewModel", "deleteComment: $it")
+                Log.e("DetailViewModel", "댓글 삭제 실패: $it")
             }
         }
     }
@@ -146,10 +202,12 @@ class DetailViewModel @Inject constructor(
             deletePostUseCase(postId).collect { event ->
                 _event.emit(event)
                 when (event) {
-                    is DetailEvent.FinishActivity -> sendMessage.emit("게시물이 삭제되었습니다.")
+                    is DetailEvent.FinishActivity -> {
+                        Log.d("DetailViewModel", "게시물 삭제 성공. 게시물 ID: $postId")
+                        sendMessage.emit("게시물이 삭제되었습니다.")
+                    }
                 }
             }
         }
     }
-
 }

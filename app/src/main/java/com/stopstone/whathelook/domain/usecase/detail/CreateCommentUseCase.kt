@@ -12,7 +12,8 @@ class CreateCommentUseCase @Inject constructor(
         userId: Long,
         parentId: Long?,
         text: String,
+        targetId: Long?
     ): CommentResponse {
-        return repository.createComment(postId, userId, parentId, text)
+        return repository.createComment(postId, userId, parentId, text, targetId)
     }
 }

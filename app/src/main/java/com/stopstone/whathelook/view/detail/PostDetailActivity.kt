@@ -47,7 +47,8 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     private val viewModel: DetailViewModel by viewModels()
     private var currentUserId: Long? = null
     private var currentEditingCommentId: Long? = null
-    private var currentReplyToComment: Comment? = null
+
+    private var isUpdatingText = false
     private var replyPrefix: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +59,7 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(true)
 
+        setupReplyTextWatcher()
         fetchCurrentUserId()
         binding.rvPostImageList.adapter = adapter
         binding.rvPostCommentList.adapter = commentAdapter
@@ -113,12 +115,12 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         binding.btnPostCommentSend.setOnClickListener {
             val comment = binding.etPostCommentEdit.text.toString()
             if (comment.isNotEmpty()) {
-                val postId =
-                    intent.getParcelableExtra<PostListItem>("post")?.id ?: return@setOnClickListener
+                val postId = intent.getParcelableExtra<PostListItem>("post")?.id ?: return@setOnClickListener
                 viewModel.createOrUpdateComment(postId, currentEditingCommentId, comment)
                 hideKeyboard()
                 binding.etPostCommentEdit.text.clear()
                 currentEditingCommentId = null
+                replyPrefix = ""
             }
         }
     }
@@ -188,7 +190,6 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 finish()
                 true
             }
-
             R.id.action_delete -> {
                 val postListItem = viewModel.postDetail.value
                 postListItem?.let {
@@ -200,7 +201,6 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 }
                 true
             }
-
             R.id.action_update -> {
                 val postListItem = viewModel.postDetail.value
                 postListItem?.let {
@@ -216,7 +216,6 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 }
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -230,12 +229,10 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
             deleteItem?.let {
                 val spanString = SpannableString(deleteItem.title.toString())
                 spanString.setSpan(
-                    ForegroundColorSpan(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.red_700
-                        )
-                    ), 0, spanString.length, 0
+                    ForegroundColorSpan(ContextCompat.getColor(this, R.color.red_700)),
+                    0,
+                    spanString.length,
+                    0
                 )
                 deleteItem.title = spanString
             }
@@ -247,7 +244,6 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                     viewModel.deleteComment(comment.id)
                     true
                 }
-
                 R.id.action_comment_update -> {
                     currentEditingCommentId = comment.id
                     binding.etPostCommentEdit.setText(comment.text)
@@ -255,7 +251,6 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                     showKeyboard()
                     true
                 }
-
                 else -> false
             }
         }
@@ -264,68 +259,67 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     }
 
     override fun onReplyClick(comment: Comment) {
+        Log.d("PostDetailActivity", "답글 버튼 클릭: 댓글 ID=${comment.id}, 작성자=${comment.author.name}, 작성자 ID=${comment.author.kakaoId}")
+        viewModel.setReplyTarget(comment)
         showReplyUI(comment)
     }
 
     override fun onShowRepliesClick(comment: Comment) {
-        TODO("Not yet implemented")
+        // 대댓글 보기 기능 구현
+        Log.d("PostDetailActivity", "대댓글 보기 클릭: 댓글 ID=${comment.id}")
     }
 
-    private fun showReplyUI(comment: Comment) {
-        currentReplyToComment = comment
-        replyPrefix = "@${comment.author.name} "
+    private fun updateReplyPrefixSpan(fullText: String) {
+        if (isUpdatingText) return
 
-        binding.etPostCommentEdit.setText(replyPrefix)
-        binding.etPostCommentEdit.requestFocus()
-
-        // 커서를 @닉네임 뒤로 이동
-        binding.etPostCommentEdit.setSelection(replyPrefix.length)
-        Log.d("PostDetailActivity", "커서 이동: ${replyPrefix.length}")
-        Log.d("PostDetailActivity", "커서 이동: ${replyPrefix}")
-
-
-        // 닉네임을 회색으로 표시
-        updateReplyPrefixSpan()
-
-        showKeyboard()
-
-        // TextWatcher 설정
-        setupReplyTextWatcher()
-    }
-
-    private fun updateReplyPrefixSpan() {
-        val spannable = SpannableString(binding.etPostCommentEdit.text)
-        spannable.setSpan(
+        isUpdatingText = true
+        val spannableString = SpannableString(fullText)
+        spannableString.setSpan(
             ForegroundColorSpan(ContextCompat.getColor(this, R.color.gray_500)),
             0,
             replyPrefix.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        binding.etPostCommentEdit.setText(spannable)
-        binding.etPostCommentEdit.setSelection(spannable.length)
+        binding.etPostCommentEdit.setText(spannableString)
+        binding.etPostCommentEdit.setSelection(fullText.length)
+        isUpdatingText = false
     }
 
     private fun setupReplyTextWatcher() {
         binding.etPostCommentEdit.addTextChangedListener(object : TextWatcher {
-            private var isDeleting = false
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                isDeleting = count > after
-            }
-
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
             override fun afterTextChanged(s: Editable?) {
-                if (isDeleting && s?.toString()?.startsWith(replyPrefix) == false) {
-                    // 닉네임이 부분적으로 삭제되었을 때 전체 삭제
-                    binding.etPostCommentEdit.setText("")
-                    currentReplyToComment = null
-                } else if (!isDeleting && (s?.length ?: 0) >= replyPrefix.length) {
-                    // 입력 중일 때 닉네임 부분의 스팬 유지
-                    updateReplyPrefixSpan()
+                if (isUpdatingText) return
+
+                val currentText = s?.toString() ?: ""
+                if (replyPrefix.isNotEmpty() && !currentText.startsWith(replyPrefix)) {
+                    // 사용자가 replyPrefix를 변경하려고 시도
+                    isUpdatingText = true
+                    binding.etPostCommentEdit.setText(replyPrefix + currentText)
+                    binding.etPostCommentEdit.setSelection((replyPrefix + currentText).length)
+                    isUpdatingText = false
+                } else {
+                    updateReplyPrefixSpan(currentText)
                 }
             }
         })
+    }
+
+    private fun showReplyUI(comment: Comment) {
+        viewModel.setReplyTarget(comment)
+        replyPrefix = "@${comment.author.name} "
+
+        isUpdatingText = true
+        binding.etPostCommentEdit.setText(replyPrefix)
+        binding.etPostCommentEdit.setSelection(replyPrefix.length)
+        isUpdatingText = false
+
+        updateReplyPrefixSpan(replyPrefix)
+        binding.etPostCommentEdit.requestFocus()
+        showKeyboard()
+
+        Log.d("PostDetailActivity", "답글 UI 설정: 대상 사용자 ID=${comment.author.kakaoId}, 이름=${comment.author.name}, 부모 댓글 ID=${comment.id}")
     }
 
     private fun fetchCurrentUserId() {
@@ -333,8 +327,9 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
             try {
                 currentUserId = KakaoUserUtil.getUserId()
                 invalidateOptionsMenu()
+                Log.d("PostDetailActivity", "현재 사용자 ID 조회 성공: $currentUserId")
             } catch (e: Exception) {
-                Log.e("PostDetailActivity", "Failed to fetch current user ID", e)
+                Log.e("PostDetailActivity", "현재 사용자 ID 조회 실패", e)
             }
         }
     }
@@ -358,6 +353,7 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         if (requestCode == REQUEST_CODE_EDIT_POST && resultCode == RESULT_OK) {
             viewModel.getPostDetail(viewModel.postDetail.value?.id ?: return)
             Toast.makeText(this, "게시글이 수정되었습니다.", Toast.LENGTH_SHORT).show()
+            Log.d("PostDetailActivity", "게시글 수정 완료")
         }
     }
 

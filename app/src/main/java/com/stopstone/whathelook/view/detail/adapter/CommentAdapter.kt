@@ -58,7 +58,7 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
                 }
 
                 // 대댓글 보기 기능 추가 (옵션)
-                if (comment.replyComment?.isNotEmpty() == true) {
+                if (comment.children.isNotEmpty()) {
                     tvPostCommentReplyVisible.visibility = View.VISIBLE
                     tvPostCommentReplyVisible.setOnClickListener {
                         listener.onShowRepliesClick(comment)
