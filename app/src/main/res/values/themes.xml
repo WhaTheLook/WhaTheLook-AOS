@@ -14,9 +14,9 @@
         <!-- 스플래시 화면 배경 색상 -->
         <item name="windowSplashScreenBackground">@color/white</item>
         <!-- 스플래시 화면 아이콘 -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_symbol</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         <!-- 스플래시 화면 지속 시간 -->
-        <item name="windowSplashScreenAnimationDuration">200</item>
+        <item name="windowSplashScreenAnimationDuration">100</item>
         <!-- 스플래시 화면 이후 테마 -->
         <item name="postSplashScreenTheme">@style/Base.Theme.WhaTheLook</item>
     </style>
