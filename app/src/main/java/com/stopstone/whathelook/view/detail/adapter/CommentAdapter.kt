@@ -14,13 +14,14 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
     private val commentList = mutableListOf<Comment>()
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): CommentViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         return CommentViewHolder(
-            parent,
-            onCommentClickListener = { position, view -> listener.onMenuClick(commentList[position], view) }
+            ItemPostCommentBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            ),
+            listener
         )
     }
 
@@ -28,9 +29,7 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
         holder.bind(commentList[position])
     }
 
-    override fun getItemCount(): Int {
-        return commentList.size
-    }
+    override fun getItemCount(): Int = commentList.size
 
     fun submitList(comments: List<Comment>) {
         commentList.clear()
@@ -39,28 +38,34 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
     }
 
     class CommentViewHolder(
-        parent: ViewGroup,
-        private val binding: ItemPostCommentBinding = ItemPostCommentBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        ),
-        private val onCommentClickListener: (position: Int, view: View) -> Unit,
-    ) :
-        RecyclerView.ViewHolder(binding.root) {
+        private val binding: ItemPostCommentBinding,
+        private val listener: OnCommentClickListener
+    ) : RecyclerView.ViewHolder(binding.root) {
+
         fun bind(comment: Comment) {
-            binding.tvUserName.text = comment.author.name
-            binding.ivUserProfile.loadCircleImage(comment.author.profileImage)
-            binding.tvPostCommentContent.text = comment.text
-            binding.tvPostCommentTimestamp.setRelativeTimeText(comment.date)
+            binding.apply {
+                tvUserName.text = comment.author.name
+                ivUserProfile.loadCircleImage(comment.author.profileImage)
+                tvPostCommentContent.text = comment.text
+                tvPostCommentTimestamp.setRelativeTimeText(comment.date)
 
-            binding.root.isClickable = false
-            binding.root.isFocusable = false
-        }
+                btnPostCommentMenu.setOnClickListener {
+                    listener.onMenuClick(comment, it)
+                }
 
-        init {
-            binding.btnPostCommentMenu.setOnClickListener {
-                onCommentClickListener(adapterPosition, it)
+                tvPostCommentReply.setOnClickListener {
+                    listener.onReplyClick(comment)
+                }
+
+                // 대댓글 보기 기능 추가 (옵션)
+                if (comment.replyComment?.isNotEmpty() == true) {
+                    tvPostCommentReplyVisible.visibility = View.VISIBLE
+                    tvPostCommentReplyVisible.setOnClickListener {
+                        listener.onShowRepliesClick(comment)
+                    }
+                } else {
+                    tvPostCommentReplyVisible.visibility = View.GONE
+                }
             }
         }
     }
@@ -68,4 +73,6 @@ class CommentAdapter(private val listener: OnCommentClickListener) :
 
 interface OnCommentClickListener {
     fun onMenuClick(comment: Comment, view: View)
+    fun onReplyClick(comment: Comment)
+    fun onShowRepliesClick(comment: Comment) // 대댓글 보기 기능 (옵션)
 }

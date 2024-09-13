@@ -3,7 +3,10 @@ package com.stopstone.whathelook.view.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Menu
@@ -44,6 +47,8 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
     private val viewModel: DetailViewModel by viewModels()
     private var currentUserId: Long? = null
     private var currentEditingCommentId: Long? = null
+    private var currentReplyToComment: Comment? = null
+    private var replyPrefix: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -256,6 +261,71 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         }
 
         popup.show()
+    }
+
+    override fun onReplyClick(comment: Comment) {
+        showReplyUI(comment)
+    }
+
+    override fun onShowRepliesClick(comment: Comment) {
+        TODO("Not yet implemented")
+    }
+
+    private fun showReplyUI(comment: Comment) {
+        currentReplyToComment = comment
+        replyPrefix = "@${comment.author.name} "
+
+        binding.etPostCommentEdit.setText(replyPrefix)
+        binding.etPostCommentEdit.requestFocus()
+
+        // 커서를 @닉네임 뒤로 이동
+        binding.etPostCommentEdit.setSelection(replyPrefix.length)
+        Log.d("PostDetailActivity", "커서 이동: ${replyPrefix.length}")
+        Log.d("PostDetailActivity", "커서 이동: ${replyPrefix}")
+
+
+        // 닉네임을 회색으로 표시
+        updateReplyPrefixSpan()
+
+        showKeyboard()
+
+        // TextWatcher 설정
+        setupReplyTextWatcher()
+    }
+
+    private fun updateReplyPrefixSpan() {
+        val spannable = SpannableString(binding.etPostCommentEdit.text)
+        spannable.setSpan(
+            ForegroundColorSpan(ContextCompat.getColor(this, R.color.gray_500)),
+            0,
+            replyPrefix.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        binding.etPostCommentEdit.setText(spannable)
+        binding.etPostCommentEdit.setSelection(spannable.length)
+    }
+
+    private fun setupReplyTextWatcher() {
+        binding.etPostCommentEdit.addTextChangedListener(object : TextWatcher {
+            private var isDeleting = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                isDeleting = count > after
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isDeleting && s?.toString()?.startsWith(replyPrefix) == false) {
+                    // 닉네임이 부분적으로 삭제되었을 때 전체 삭제
+                    binding.etPostCommentEdit.setText("")
+                    currentReplyToComment = null
+                } else if (!isDeleting && (s?.length ?: 0) >= replyPrefix.length) {
+                    // 입력 중일 때 닉네임 부분의 스팬 유지
+                    updateReplyPrefixSpan()
+                }
+            }
+        })
     }
 
     private fun fetchCurrentUserId() {
