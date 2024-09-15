@@ -216,15 +216,52 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 }
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onMenuClick(comment: Comment, view: View) {
         val popup = PopupMenu(this, view)
+        val postListItem = viewModel.postDetail.value
 
-        if (currentUserId == comment.author.kakaoId.toLong()) {
-            popup.inflate(R.menu.item_comment_menu)
+        val isCommentAuthor = currentUserId == comment.author.kakaoId.toLong()
+        val isPostAuthor = postListItem?.let { currentUserId == it.author.kakaoId.toLong() } ?: false
+
+        popup.inflate(R.menu.item_comment_menu)
+
+        Log.d("PostDetailActivity", "메뉴 생성 - 댓글 ID: ${comment.id}, 댓글 작성자: $isCommentAuthor, 게시글 작성자: $isPostAuthor")
+
+        // 채택 메뉴 아이템 설정
+        val acceptItem = popup.menu.findItem(R.id.action_comment_accept)
+        if (isPostAuthor) {
+            if (comment.accept) {
+                acceptItem.title = "채택 취소"
+                Log.d("PostDetailActivity", "채택된 댓글 메뉴: 채택 취소 옵션 표시")
+            } else {
+                acceptItem.title = "채택"
+                Log.d("PostDetailActivity", "채택되지 않은 댓글 메뉴: 채택 옵션 표시")
+            }
+        } else {
+            popup.menu.removeItem(R.id.action_comment_accept)
+        }
+
+        // 삭제 및 수정 메뉴 아이템 설정
+        if (!isCommentAuthor) {
+            popup.menu.removeItem(R.id.action_comment_delete)
+            popup.menu.removeItem(R.id.action_comment_update)
+        } else {
+            Log.d("PostDetailActivity", "댓글 작성자 메뉴: 삭제, 수정 옵션 표시")
+        }
+
+        if (!isCommentAuthor && !isPostAuthor) {
+            // 둘 다 아닌 경우: 메뉴를 표시하지 않음
+            Log.d("PostDetailActivity", "권한 없음: 메뉴 표시하지 않음")
+            return
+        }
+
+        // 삭제 메뉴 아이템 색상 변경 (댓글 작성자인 경우에만)
+        if (isCommentAuthor) {
             val deleteItem = popup.menu.findItem(R.id.action_comment_delete)
             deleteItem?.let {
                 val spanString = SpannableString(deleteItem.title.toString())
@@ -236,19 +273,32 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
                 )
                 deleteItem.title = spanString
             }
+            Log.d("PostDetailActivity", "댓글 작성자: 삭제 메뉴 아이템 색상 변경")
         }
 
         popup.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_comment_delete -> {
+                    Log.d("PostDetailActivity", "댓글 삭제 선택")
                     viewModel.deleteComment(comment.id)
                     true
                 }
                 R.id.action_comment_update -> {
+                    Log.d("PostDetailActivity", "댓글 수정 선택")
                     currentEditingCommentId = comment.id
                     binding.etPostCommentEdit.setText(comment.text)
                     binding.etPostCommentEdit.requestFocus()
                     showKeyboard()
+                    true
+                }
+                R.id.action_comment_accept -> {
+                    val postId = viewModel.postDetail.value?.id ?: return@setOnMenuItemClickListener false
+                    if (comment.accept) {
+                        Log.d("PostDetailActivity", "댓글 채택 취소 메뉴 선택: 댓글 ID=${comment.id}")
+                    } else {
+                        Log.d("PostDetailActivity", "댓글 채택 메뉴 선택: 댓글 ID=${comment.id}")
+                    }
+                    viewModel.toggleCommentAccept(postId, comment.id)
                     true
                 }
                 else -> false
@@ -256,6 +306,7 @@ class PostDetailActivity : AppCompatActivity(), OnCommentClickListener {
         }
 
         popup.show()
+        Log.d("PostDetailActivity", "댓글 메뉴 표시됨")
     }
 
     override fun onReplyClick(comment: Comment) {

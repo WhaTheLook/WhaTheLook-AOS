@@ -7,4 +7,8 @@
     <item
         android:id="@+id/action_comment_update"
         android:title="수정" />
+
+    <item
+        android:id="@+id/action_comment_accept"
+        android:title="채택" />
 </menu>

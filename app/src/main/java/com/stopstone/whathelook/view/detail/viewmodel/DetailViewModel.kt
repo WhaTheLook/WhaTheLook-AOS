@@ -8,6 +8,7 @@ import com.stopstone.whathelook.data.model.response.Comment
 import com.stopstone.whathelook.data.model.response.PostListItem
 import com.stopstone.whathelook.domain.event.DetailEvent
 import com.stopstone.whathelook.domain.usecase.common.DeletePostUseCase
+import com.stopstone.whathelook.domain.usecase.detail.AcceptCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.CreateCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.DeleteCommentUseCase
 import com.stopstone.whathelook.domain.usecase.detail.GetChildCommentsUseCase
@@ -33,6 +34,7 @@ class DetailViewModel @Inject constructor(
     private val deleteCommentUseCase: DeleteCommentUseCase,
     private val deletePostUseCase: DeletePostUseCase,
     private val getChildCommentsUseCase: GetChildCommentsUseCase,
+    private val acceptCommentUseCase: AcceptCommentUseCase,
 ) : ViewModel() {
     private val _postDetail = MutableStateFlow<PostListItem?>(null)
     val postDetail = _postDetail.asStateFlow()
@@ -217,6 +219,42 @@ class DetailViewModel @Inject constructor(
                 Log.e("DetailViewModel", "Error loading child comments", e)
             }
         }
+    }
+
+    fun toggleCommentAccept(postId: Long, commentId: Long) {
+        viewModelScope.launch {
+            try {
+                val result = acceptCommentUseCase(postId, commentId)
+                Log.d("DetailViewModel", "댓글 채택 상태 변경 성공: $result")
+                val newAcceptStatus = updateCommentAcceptStatus(commentId)
+                val messageText = if (newAcceptStatus) {
+                    "댓글이 채택되었습니다."
+                } else {
+                    "댓글 채택이 취소되었습니다."
+                }
+                sendMessage.emit(messageText)
+                Log.d("DetailViewModel", "메시지 전송: $messageText")
+            } catch (e: Exception) {
+                Log.e("DetailViewModel", "댓글 채택 상태 변경 실패: ${e.message}")
+                sendMessage.emit("댓글 채택 상태 변경에 실패했습니다.")
+            }
+        }
+    }
+
+    private fun updateCommentAcceptStatus(commentId: Long): Boolean {
+        var newAcceptStatus = false
+        _comments.update { comments ->
+            comments.map { comment ->
+                if (comment.id == commentId) {
+                    newAcceptStatus = !comment.accept
+                    Log.d("DetailViewModel", "댓글 채택 상태 업데이트: 댓글 ID=$commentId, 새로운 상태=$newAcceptStatus")
+                    comment.copy(accept = newAcceptStatus)
+                } else {
+                    comment
+                }
+            }
+        }
+        return newAcceptStatus
     }
 
     fun deletePost(postId: Long) {

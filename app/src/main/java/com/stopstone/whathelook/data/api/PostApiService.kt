@@ -77,6 +77,12 @@ interface PostApiService {
         @Body requestComment: RequestUpdateComment,
     ): String
 
+    @POST("/post/{postId}/{commentId}/accept")
+    suspend fun acceptComment(
+        @Path("postId") postId: Long,
+        @Path("commentId") commentId: Long
+    ): String
+
     @Multipart
     @PUT("/post/update")
     suspend fun updatePost(

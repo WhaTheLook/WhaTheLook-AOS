@@ -23,4 +23,5 @@ interface DetailRepository {
         lastCommentId: Long?,
         size: Int
     ): ChildCommentsResponse
+    suspend fun acceptComment(postId: Long, commentId: Long): String
 }

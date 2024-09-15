@@ -58,4 +58,10 @@ class DetailRepositoryImpl @Inject constructor(
     ): ChildCommentsResponse {
         return postApiService.getChildComments(postId, parentId, lastCommentId, size)
     }
+
+    override suspend fun acceptComment(postId: Long, commentId: Long): String {
+        return postApiService.acceptComment(postId, commentId).also {
+            Log.d("DetailRepositoryImpl", "댓글 채택 요청 완료: 게시글 ID=$postId, 댓글 ID=$commentId")
+        }
+    }
 }
